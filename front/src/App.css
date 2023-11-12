@@ -36,3 +36,7 @@
     transform: rotate(360deg);
   }
 }
+
+#makeClass:hover {
+  color: #96c9fa;
+}
