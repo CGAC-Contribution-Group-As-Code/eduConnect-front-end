@@ -40,3 +40,11 @@
 #makeClass:hover {
   color: #96c9fa;
 }
+
+#addMem:hover {
+  color: #389bf8;
+}
+
+#submit_btn:hover {
+  color: #389bf8;
+}

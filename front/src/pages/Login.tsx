@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
 import StyledDiv from "../styles/StyledDiv";
 import StyledWrapper from "../styles/StyledWrapper";
@@ -12,6 +12,9 @@ import { useNavigate } from "react-router-dom";
 
 export const Login = () => {
   const navigate = useNavigate();
+
+  const id = useRef<string>("");
+  const pw = useRef<string>("");
 
   const login = () => {
     Swal.fire({
