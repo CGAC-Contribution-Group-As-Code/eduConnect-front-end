@@ -119,7 +119,7 @@ const Student = () => {
               style={{ cursor: "pointer" }}
               size={20}
               color="gray"
-              onClick={() => add(user._id)}
+              onClick={() => add(user.user_id)}
             />
           </StyledItem>
         ))}
