@@ -1,4 +1,4 @@
-import React, { useRef, useState} from "react";
+import React, { useRef, useState } from "react";
 import styled from "styled-components";
 import StyledDiv from "../styles/StyledDiv";
 import StyledWrapper from "../styles/StyledWrapper";
@@ -7,7 +7,7 @@ import theme from "../styles/theme";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from 'react-query';
+import { useQuery } from "react-query";
 import axios from "axios";
 
 export const MakeClass = () => {
@@ -56,7 +56,12 @@ export const MakeClass = () => {
 
         <Styledh2
           id="submit_btn"
-          style={{ fontSize: "1em", textAlign: "end", cursor: "pointer" }}
+          style={{
+            fontSize: "1em",
+            alignSelf: "end",
+            cursor: "pointer",
+            width: "fit-content",
+          }}
           onClick={() => make()}
         >
           개설하기!
@@ -66,60 +71,59 @@ export const MakeClass = () => {
   );
 };
 
-
-
 const Student = () => {
-  interface User{
-    "_id": string;
-    "user_id": string;
-    "teacher": string;
+  interface User {
+    _id: string;
+    user_id: string;
+    teacher: string;
   }
 
-  const { data: users, isLoading, isError } = useQuery<User[], Error>({
+  const {
+    data: users,
+    isLoading,
+    isError,
+  } = useQuery<User[], Error>({
     queryKey: "users",
     queryFn: async () => {
-      const response = await axios.get<User[]>('http://localhost:8000/all-user');
+      const response = await axios.get<User[]>(
+        "http://localhost:8000/all-user"
+      );
       return response.data;
     },
   });
 
-
-  const add = () => {
+  const add = (id: string) => {
     Swal.fire({
       icon: "success",
-      title: "id님을 강의에 추가했습니다.",
+      title: `${id}님을 강의에 추가했습니다.`,
     });
   };
 
   if (isLoading) {
-    return <span>Loading...</span>
+    return <span>Loading...</span>;
   }
 
   if (isError) {
-    return <span>Error</span>
+    return <span>Error</span>;
   }
 
-  
-  if(users){
+  if (users) {
     return (
       <>
-        {
-  
-          users.map((user) => (
-            <StyledItem id="addMem" key={user._id}> {/* Add key attribute */}
-              <p style={{ fontWeight: "600" }}>{user.user_id}</p>
-              <AiOutlinePlusCircle
-                style={{ cursor: "pointer" }}
-                size={20}
-                color="gray"
-                onClick={() => add()}
-              />
-            </StyledItem>
-          ))
-        }
-  
+        {users.map((user) => (
+          <StyledItem id="addMem" key={user._id}>
+            {" "}
+            {/* Add key attribute */}
+            <p style={{ fontWeight: "600" }}>{user.user_id}</p>
+            <AiOutlinePlusCircle
+              style={{ cursor: "pointer" }}
+              size={20}
+              color="gray"
+              onClick={() => add(user._id)}
+            />
+          </StyledItem>
+        ))}
       </>
-  
     );
   }
 

@@ -41,7 +41,7 @@ export const Classroom = () => {
       <>
         {classroom.map((room) => {
           return (
-            <StyledBox key={room._id}>
+            <StyledBox key={room._id} onClick={() => navigate("/class/1")}>
               <p style={{ fontWeight: "600", fontSize: "1.1em" }}>
                 {room.name}
               </p>

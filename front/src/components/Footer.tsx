@@ -39,7 +39,7 @@ export const Footer = () => {
           </p>
         </div>
 
-        <img src="./image/logo.png" alt="logo" width="220px" />
+        <img src="/image/logo.png" alt="logo" width="220px" />
       </div>
     </div>
   );

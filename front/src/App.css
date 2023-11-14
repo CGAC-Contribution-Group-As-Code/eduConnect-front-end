@@ -48,3 +48,8 @@
 #submit_btn:hover {
   color: #389bf8;
 }
+
+#upload :hover {
+  color: #389bf8;
+  font-weight: 600;
+}

@@ -5,6 +5,7 @@ import { Login } from "./pages/Login";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
 import { MakeClass } from "./pages/MakeClass";
+import { Room } from "./pages/Room";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/make" element={<MakeClass />} />
+        <Route path="/class/:id" element={<Room />} />
       </Routes>
       <Footer />
     </>
