@@ -7,55 +7,57 @@ import { AiOutlinePlusCircle } from "react-icons/ai";
 import theme from "../styles/theme";
 import { useNavigate } from "react-router-dom";
 
+
 export const Home = () => {
   const navigate = useNavigate();
 
-  return (
-    <StyledWrapper>
-      <StyledDiv>
-        <div
-          style={{
-            display: "flex",
-            flexFlow: "row nowrap",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Styledh2>내가 속한 강의실</Styledh2>
+
+
+    return (
+      <StyledWrapper>
+        <StyledDiv>
           <div
             style={{
               display: "flex",
               flexFlow: "row nowrap",
-              gap: "5px",
+              justifyContent: "space-between",
               alignItems: "center",
-              cursor: "pointer",
             }}
-            id="makeClass"
-            onClick={() => navigate("/make")}
           >
-            <StyledText>강의 개설하기</StyledText>
-            <AiOutlinePlusCircle size={25} color={theme.skyblue} />
+            <Styledh2>내가 속한 강의실</Styledh2>
+            <div
+              style={{
+                display: "flex",
+                flexFlow: "row nowrap",
+                gap: "5px",
+                alignItems: "center",
+                cursor: "pointer",
+              }}
+              id="makeClass"
+              onClick={() => navigate("/make")}
+            >
+              <StyledText>강의 개설하기</StyledText>
+              <AiOutlinePlusCircle size={25} color={theme.skyblue} />
+            </div>
           </div>
-        </div>
 
-        <hr />
-        <StyledBox>
-          <Classroom />
-          <Classroom />
-          <Classroom />
-          <Classroom />
-        </StyledBox>
-        <div style={{ width: "50%", position: "relative", marginTop: "20px" }}>
-          <StyledText>시스템 공지사항</StyledText>
           <hr />
-          <ul style={{ position: "relative", left: "30px" }}>
-            <Styledli>저작권 유의사항 안내</Styledli>
-            <Styledli>개발 시작</Styledli>
-          </ul>
-        </div>
-      </StyledDiv>
-    </StyledWrapper>
-  );
+          <StyledBox>
+            <Classroom/>
+          </StyledBox>
+          <div
+            style={{ width: "50%", position: "relative", marginTop: "20px" }}
+          >
+            <StyledText>시스템 공지사항</StyledText>
+            <hr />
+            <ul style={{ position: "relative", left: "30px" }}>
+              <Styledli>저작권 유의사항 안내</Styledli>
+              <Styledli>개발 시작</Styledli>
+            </ul>
+          </div>
+        </StyledDiv>
+      </StyledWrapper>
+    );
 };
 
 const StyledBox = styled.div`

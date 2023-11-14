@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState} from "react";
 import styled from "styled-components";
 import StyledDiv from "../styles/StyledDiv";
 import StyledWrapper from "../styles/StyledWrapper";
@@ -7,6 +7,8 @@ import theme from "../styles/theme";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from 'react-query';
+import axios from "axios";
 
 export const MakeClass = () => {
   const navigate = useNavigate();
@@ -64,7 +66,24 @@ export const MakeClass = () => {
   );
 };
 
+
+
 const Student = () => {
+  interface User{
+    "_id": string;
+    "user_id": string;
+    "teacher": string;
+  }
+
+  const { data: users, isLoading, isError } = useQuery<User[], Error>({
+    queryKey: "users",
+    queryFn: async () => {
+      const response = await axios.get<User[]>('http://localhost:8000/all-user');
+      return response.data;
+    },
+  });
+
+
   const add = () => {
     Swal.fire({
       icon: "success",
@@ -72,17 +91,39 @@ const Student = () => {
     });
   };
 
-  return (
-    <StyledItem id="addMem">
-      <p style={{ fontWeight: "600" }}>ID</p>
-      <AiOutlinePlusCircle
-        style={{ cursor: "pointer" }}
-        size={20}
-        color="gray"
-        onClick={() => add()}
-      />
-    </StyledItem>
-  );
+  if (isLoading) {
+    return <span>Loading...</span>
+  }
+
+  if (isError) {
+    return <span>Error</span>
+  }
+
+  
+  if(users){
+    return (
+      <>
+        {
+  
+          users.map((user) => (
+            <StyledItem id="addMem" key={user._id}> {/* Add key attribute */}
+              <p style={{ fontWeight: "600" }}>{user.user_id}</p>
+              <AiOutlinePlusCircle
+                style={{ cursor: "pointer" }}
+                size={20}
+                color="gray"
+                onClick={() => add()}
+              />
+            </StyledItem>
+          ))
+        }
+  
+      </>
+  
+    );
+  }
+
+  return null;
 };
 
 const StyledItem = styled.div`

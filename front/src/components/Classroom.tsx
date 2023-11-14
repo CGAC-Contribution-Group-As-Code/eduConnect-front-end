@@ -1,25 +1,68 @@
 import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "react-query";
+import axios from "axios";
+
+interface Room {
+  _id: string;
+  name: string;
+  teacher: string;
+  member: string[];
+}
 
 export const Classroom = () => {
   const navigate = useNavigate();
 
-  return (
-    <StyledBox>
-      <p style={{ fontWeight: "600", fontSize: "1.1em" }}>강의실 이름</p>
-      <div
-        style={{
-          display: "flex",
-          flexFlow: "row nowrap",
-          justifyContent: "space-between",
-        }}
-      >
-        <p>교육자 : id님</p>
-        <p>현재 인원 : 5명</p>
-      </div>
-    </StyledBox>
-  );
+  const {
+    data: classroom,
+    isLoading,
+    isError,
+  } = useQuery<Room[], Error>({
+    queryKey: "rooms",
+    queryFn: async () => {
+      const response = await axios.get<Room[]>(
+        "http://localhost:8000/all-room"
+      );
+      return response.data;
+    },
+  });
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  if (isError) {
+    return <span>Error</span>;
+  }
+
+  if (classroom) {
+    return (
+      <>
+        {classroom.map((room) => {
+          return (
+            <StyledBox key={room._id}>
+              <p style={{ fontWeight: "600", fontSize: "1.1em" }}>
+                {room.name}
+              </p>
+              <div
+                style={{
+                  display: "flex",
+                  flexFlow: "row nowrap",
+                  justifyContent: "space-between",
+                }}
+              >
+                <p>교육자 : {room.teacher}님</p>
+                {/* <p>현재 인원 : {info.member}명</p> */}
+              </div>
+            </StyledBox>
+          );
+        })}
+      </>
+    );
+  }
+
+  return null;
 };
 
 const StyledBox = styled.div`
