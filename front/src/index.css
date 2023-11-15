@@ -35,11 +35,6 @@ label span {
   font-weight: 600 !important;
 }
 
-input {
-  font-family: "HealthsetGothicLight" !important;
-  font-weight: 600 !important;
-}
-
 .swal2-title {
   font-family: "HealthsetGothicLight" !important;
   font-weight: 600 !important;
@@ -86,4 +81,14 @@ input {
   display: flex;
   flex-flow: column nowrap;
   gap: 7px;
+}
+label {
+  font-family: "HealthsetGothicLight" !important;
+}
+input {
+  font-family: "HealthsetGothicLight" !important;
+}
+
+textarea {
+  font-family: "HealthsetGothicLight" !important;
 }

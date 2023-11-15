@@ -12,12 +12,12 @@ import axios from "axios";
 
 export const MakeClass = () => {
   const navigate = useNavigate();
-  const name = useRef<string>("");
+  const name = useRef<HTMLInputElement>(null);
 
   const make = () => {
     Swal.fire({
       icon: "success",
-      title: "강의실 이름 개설 성공했습니다!",
+      title: `${name.current!.value} 개설 성공했습니다!`,
     }).then((res) => {
       if (res.isConfirmed) {
         navigate("/");
@@ -36,6 +36,7 @@ export const MakeClass = () => {
           label="강의 명"
           variant="standard"
           style={{ width: "70%" }}
+          inputRef={name}
         />
 
         <StyledGrid>

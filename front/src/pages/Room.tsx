@@ -11,7 +11,10 @@ import { ClassStdMng } from "../components/ClassStdMng";
 
 export const Room = () => {
   const path = decodeURI(window.location.pathname).split("/");
-  const now = path.at(-1);
+  const name = path.at(-1);
+  const now = path.at(-2);
+
+  console.log(name, now);
 
   const [page, setPage] = useState<Number>(0);
 
@@ -21,11 +24,9 @@ export const Room = () => {
         return <ClassHome />;
       case 1: // 이정표
         return <ClassGuide />;
-      case 2: // 퀴즈
-        return <ClassQuiz />;
-      case 3: // Q&A
+      case 2: // Q&A
         return <ClassQA />;
-      case 4: // 학습자 관리
+      case 3: // 학습자 관리
         return <ClassStdMng />;
     }
   };
@@ -44,17 +45,16 @@ export const Room = () => {
             >
               MENU
             </p>
-            <Styledp onClick={() => setPage(0)}>HOME</Styledp>
-            <Styledp onClick={() => setPage(1)}>이정표</Styledp>
-            <Styledp onClick={() => setPage(2)}>Quiz</Styledp>
-            <Styledp onClick={() => setPage(3)}>Q&A</Styledp>
-            <Styledp onClick={() => setPage(4)}>학습자 관리</Styledp>
+            <Styledp onClick={() => setPage(0)}>Home</Styledp>
+            <Styledp onClick={() => setPage(1)}>Milestone</Styledp>
+            <Styledp onClick={() => setPage(2)}>Q&A</Styledp>
+            <Styledp onClick={() => setPage(3)}>학습자 관리</Styledp>
           </StyledMenu>
           <StyledContent>
             <p
               style={{ fontWeight: "600", textAlign: "end", fontSize: "1.2em" }}
             >
-              강의실 이름
+              {name}
             </p>
 
             {SwitchPage(page)}
