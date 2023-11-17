@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import styled from "styled-components";
 import theme from "../../styles/theme";
 import { IoMdClose } from "react-icons/io";
@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 import { TbLocationPlus } from "react-icons/tb";
 import { useQuery } from "react-query";
 import axios from "axios";
+import { useMutation, useQueryClient } from "react-query";
 
 type Props = {
   mile_id: string;
@@ -31,8 +32,6 @@ interface MileStone {
 }
 
 export const GuideContent = ({ mile_id, onCloseHandler }: Props) => {
-  console.log(mile_id);
-
   let state = useSelector((state: RootState) => {
     return state;
   });
@@ -40,7 +39,38 @@ export const GuideContent = ({ mile_id, onCloseHandler }: Props) => {
   const { id, role } = user;
 
   const [isQuiz, setIsQuiz] = useState<boolean>(true);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
+  const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) {
+      return;
+    }
+    setSelectedFile(e.target.files[0]); // 파일 선택 시 상태 업데이트
+  };
+
+  const onUploadButtonClick = () => {
+    console.log("Uploading file:", selectedFile?.type);
+    if (selectedFile) {
+      // 선택한 파일을 서버로 업로드하거나 다른 작업을 수행할 수 있음
+
+      const formData = new FormData();
+
+      formData.append("file", selectedFile);
+      // 여기에 서버로 파일을 업로드하는 코드를 추가하면 됩니다.
+      axios.post(
+        `http://localhost:8000/milestone/${mile_id}/content`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+    } else {
+      alert("파일을 선택해주세요.");
+    }
+  };
   const room_id = decodeURI(window.location.pathname).split("/").at(-2);
   const {
     data: milestone_data,
@@ -131,7 +161,13 @@ export const GuideContent = ({ mile_id, onCloseHandler }: Props) => {
 
         {role === 1 && isQuiz === false ? (
           <StyledRow id="upload" style={{ alignSelf: "end" }}>
-            <p>강의자료 업로드</p>
+            <input
+              type="file"
+              accept=".pdf"
+              ref={inputRef}
+              onChange={onUpload}
+            />
+            <p onClick={onUploadButtonClick}>강의자료 업로드</p>
             <MdOutlineBookmarkAdd size={23} color={theme.skyblue} />
           </StyledRow>
         ) : role === 1 && isQuiz === true ? (
@@ -167,6 +203,8 @@ const Lecture = ({ mile_id }: TypeProps) => {
   const { user } = state;
   const { id, role } = user;
 
+  const [openPDF, setOpenPDF] = useState<string>("");
+
   const e = role;
   const {
     data: contents,
@@ -197,14 +235,32 @@ const Lecture = ({ mile_id }: TypeProps) => {
     });
   };
 
+  const openPDFHandler = (contentPath: string) => {
+    const a = document.createElement("a");
+    a.href =
+      "http://localhost:8000/milestone/65574fc04eb942011bed354a/content/7020a2aa-3573-4fd7-91c4-40d1840c554f";
+    a.target = "_blank";
+    document.body.appendChild(a);
+    a.click();
+    console.log(a);
+    setTimeout(() => {
+      a.remove();
+    }, 1000);
+  };
+
   return (
     <>
       <StyledLecture>
         {contents?.map((content) => {
           return (
             <>
-              <StyledPaper>
-                <p style={{ cursor: "pointer" }}>{content.name}</p>
+              <StyledPaper key={content.path}>
+                <p
+                  style={{ cursor: "pointer" }}
+                  onClick={() => openPDFHandler(content.path)}
+                >
+                  {content.name}
+                </p>
                 {/* 클릭 이벤트 -> 이정표의 강의자료 화면으로 이동 */}
                 {e === 1 ? (
                   <StyledRow>
