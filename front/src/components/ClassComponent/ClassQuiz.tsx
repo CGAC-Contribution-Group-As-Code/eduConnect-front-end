@@ -101,7 +101,7 @@ export const ClassQuiz: React.FC<ContentProps> = ({ contents }) => {
           >
             <>
               {value.roundes.map((item, idx) => {
-                return <Round roundNum={idx+1} quiz={item.quiz} key={idx} />;
+                return <Round roundNum={idx + 1} quiz={item.quiz} key={idx} />;
               })}
             </>
           </div>
@@ -193,8 +193,8 @@ const Objective = ({
         scoring === -1
           ? { backgroundColor: "#fad0d0" }
           : scoring === 1
-            ? { backgroundColor: "aliceblue" }
-            : { backgroundColor: "transparent" }
+          ? { backgroundColor: "aliceblue" }
+          : { backgroundColor: "transparent" }
       }
     >
       <div
@@ -313,8 +313,8 @@ const Subjective = ({ num, title, desc, isCorrect, myAnswer }: SubProps) => {
         scoring === -1
           ? { backgroundColor: "#fad0d0" }
           : scoring === 1
-            ? { backgroundColor: "aliceblue" }
-            : { backgroundColor: "transparent" }
+          ? { backgroundColor: "aliceblue" }
+          : { backgroundColor: "transparent" }
       }
     >
       <div
