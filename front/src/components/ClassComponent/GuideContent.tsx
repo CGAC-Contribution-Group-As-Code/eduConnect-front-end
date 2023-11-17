@@ -15,7 +15,7 @@ type Props = {
 export const GuideContent = ({ id, onCloseHandler }: Props) => {
   var mileStoneId = id;
 
-  const [isQuiz, setIsQuiz] = useState<boolean>(false);
+  const [isQuiz, setIsQuiz] = useState<boolean>(true);
 
   return (
     <StyledDiv>
