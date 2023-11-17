@@ -38,20 +38,24 @@ export const Home = () => {
           }}
         >
           <Styledh2>내가 속한 강의실</Styledh2>
-          <div
-            style={{
-              display: "flex",
-              flexFlow: "row nowrap",
-              gap: "5px",
-              alignItems: "center",
-              cursor: "pointer",
-            }}
-            id="makeClass"
-            onClick={() => navigate("/make")}
-          >
-            <StyledText>강의 개설하기</StyledText>
-            <AiOutlinePlusCircle size={25} color={theme.skyblue} />
-          </div>
+          {role === 1 ? (
+            <div
+              style={{
+                display: "flex",
+                flexFlow: "row nowrap",
+                gap: "5px",
+                alignItems: "center",
+                cursor: "pointer",
+              }}
+              id="makeClass"
+              onClick={() => navigate("/make")}
+            >
+              <StyledText>강의 개설하기</StyledText>
+              <AiOutlinePlusCircle size={25} color={theme.skyblue} />
+            </div>
+          ) : (
+            <></>
+          )}
         </div>
 
         <hr />
