@@ -8,7 +8,7 @@ interface Room {
   _id: string;
   name: string;
   teacher: string;
-  member: string[];
+  member: number;
 }
 
 export const Classroom = () => {
@@ -38,6 +38,7 @@ export const Classroom = () => {
     return (
       <>
         {classroom.map((room) => {
+          console.log(room)
           return (
             <StyledBox
               key={room._id}
@@ -54,7 +55,7 @@ export const Classroom = () => {
                 }}
               >
                 <p>교육자 : {room.teacher}님</p>
-                {/* <p>현재 인원 : {info.member}명</p> */}
+                <p>현재 인원 : {room.member}명</p>
               </div>
             </StyledBox>
           );
