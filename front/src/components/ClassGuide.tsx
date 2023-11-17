@@ -116,6 +116,8 @@ const CreateMilestone = ({ setMake }: Offprops) => {
         //   // 서버에서 응답 메시지를 받지 못했을경우 기본 메시지 설정또한 함께 해준다
         //   throw Error(axiosResponse.data.message || "문제가 발생했어요!");
         // }
+
+
       } catch (e) {
         Swal.fire({
           icon: "error",

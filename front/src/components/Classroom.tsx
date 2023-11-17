@@ -22,7 +22,7 @@ export const Classroom = () => {
     queryKey: "rooms",
     queryFn: async () => {
       const response = await axios.get<Room[]>(
-        "http://localhost:8000/all-room"
+        "http://localhost:8000/room"
       );
       return response.data;
     },

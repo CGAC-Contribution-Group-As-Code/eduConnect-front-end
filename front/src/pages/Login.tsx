@@ -17,11 +17,19 @@ export const Login = () => {
   const pw = useRef<string>("");
 
   const login = () => {
-    Swal.fire({
-      icon: "success",
-      title: "안녕하세요!",
-    });
-    navigate("/");
+    if(id === undefined || pw === undefined){
+      Swal.fire({
+        icon: "error",
+        title: "아이디와 비밀번호를 다시 입력해주세요",
+      });
+    }else{
+      Swal.fire({
+        icon: "success",
+        title: "안녕하세요!",
+      });
+      navigate("/");
+    }
+
   };
 
   return (
