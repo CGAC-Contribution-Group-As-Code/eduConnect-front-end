@@ -46,6 +46,8 @@ export const Room = () => {
         return <QuizMng />;
       case 5: // Q&A 관리
         return <QAMng />;
+      case 6: // 공지사항 관리
+        return <QAMng />;
     }
   };
 
@@ -71,6 +73,7 @@ export const Room = () => {
                 <Styledp onClick={() => setPage(3)}>학습자 관리</Styledp>
                 <Styledp onClick={() => setPage(4)}>Quiz 관리</Styledp>
                 <Styledp onClick={() => setPage(5)}>Q&A 관리</Styledp>
+                <Styledp onClick={() => setPage(6)}>공지사항 관리</Styledp>
               </>
             ) : (
               <></>
