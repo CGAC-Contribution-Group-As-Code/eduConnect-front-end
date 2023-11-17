@@ -10,6 +10,15 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
 import axios from "axios";
 import { HiUserMinus } from "react-icons/hi2";
+import { useSelector } from "react-redux";
+
+
+interface RootState {
+  user: {
+    id: string;
+    role: number;
+  };
+}
 
 export const MakeClass = () => {
   const navigate = useNavigate();
@@ -66,10 +75,17 @@ const CreateRoom: React.FC<ChildProps> = ({ nameRef, roomDescRef }) => {
   const nameValue = nameRef.current?.value;
   const roomDescValue = roomDescRef.current?.value;
 
+  let state = useSelector((state: RootState) => {
+    return state;
+  });
+  const { user } = state;
+  const { id, role } = user;
+
+
   interface User {
     _id: string;
     user_id: string;
-    teacher: string;
+    role: number;
   }
 
   interface AddStd {
@@ -99,11 +115,19 @@ const CreateRoom: React.FC<ChildProps> = ({ nameRef, roomDescRef }) => {
   }
 
   const add = (user_id: string, _id: string) => {
-    setStd([...std, { _id, user_id }]);
-    Swal.fire({
-      icon: "success",
-      title: `${user_id}님을 강의에 추가했습니다.`,
-    });
+    const isDuplicate = std.some(item => item._id === _id);
+    if (isDuplicate) {
+      Swal.fire({
+        icon: "warning",
+        title: "이미 초대된 인원입니다.",
+      });
+    } else {
+      Swal.fire({
+        icon: "success",
+        title: `id : ${user_id}님을 강의에 추가하였습니다.`,
+      });
+      setStd([...std, { _id: _id, user_id: user_id }]);
+    }
   };
 
   function deleteStd(_id: string, user_id: string): void {
@@ -119,7 +143,8 @@ const CreateRoom: React.FC<ChildProps> = ({ nameRef, roomDescRef }) => {
     axios.post("http://localhost:8000/room", {
       name: nameValue,
       desc: roomDescValue,
-      student: std,
+      teacher: id,
+      student: std
     });
   }
 
@@ -133,7 +158,7 @@ const CreateRoom: React.FC<ChildProps> = ({ nameRef, roomDescRef }) => {
 
           {users ? (
             users.map((user) =>
-              user.teacher === "0" ? (
+              user.role === 0 ? (
                 <StyledItem id="addMem" key={user._id + "!"}>
                   {" "}
                   {/* Add key attribute */}
