@@ -74,6 +74,7 @@ interface ChildProps {
 const CreateRoom: React.FC<ChildProps> = ({ nameRef, roomDescRef }) => {
   const nameValue = nameRef.current?.value;
   const roomDescValue = roomDescRef.current?.value;
+  const navigate = useNavigate();
 
   let state = useSelector((state: RootState) => {
     return state;
@@ -145,7 +146,18 @@ const CreateRoom: React.FC<ChildProps> = ({ nameRef, roomDescRef }) => {
       desc: roomDescValue,
       teacher: id,
       student: std
-    });
+    }).then((res) => {
+      if(res.data){
+        Swal.fire({
+          icon: "success",
+          title: `${nameValue}가 개설되었습니다.`,
+        }).then((swalRes) => {
+          if (swalRes.isConfirmed) {
+            navigate(`/home`);
+          }
+        });
+      }
+    })
   }
 
   return (
