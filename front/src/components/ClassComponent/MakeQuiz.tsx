@@ -13,8 +13,39 @@ import {
   TbCircleNumber4,
 } from "react-icons/tb";
 
-export const MakeQuiz = () => {
+type Quiz = {
+  title: string;
+  desc: string;
+  type: string;
+  etc: string[];
+  answer: string;
+};
+
+type Props = {
+  mile_id: string;
+};
+
+type TempProps = {
+  mile_id: string;
+  settQuizList: (e: Quiz[]) => void;
+  quizList: Quiz[];
+};
+
+export const MakeQuiz = ({ mile_id }: Props) => {
+  const [quizList, settQuizList] = useState<Quiz[]>([]);
+
   const Final = () => {
+    axios
+      .post(
+        `http://localhost:8000/milestone/${mile_id}/content/${"199a74cd-e234-43ad-8c85-31798a30d12a"}/quiz`,
+        quizList
+      )
+      .then((res) => {
+        Swal.fire({
+          icon: "success",
+          title: "AI가 문제를 만들었습니다",
+        });
+      });
     Swal.fire({
       icon: "success",
       title: "Quiz 생성 성공",
@@ -24,14 +55,23 @@ export const MakeQuiz = () => {
   return (
     <StyledDiv>
       <StyledGrid>
-        <Obj />
-        <Sub />
+        <Obj
+          mile_id={mile_id}
+          settQuizList={settQuizList}
+          quizList={quizList}
+        />
+        <Sub
+          mile_id={mile_id}
+          settQuizList={settQuizList}
+          quizList={quizList}
+        />
       </StyledGrid>
 
       <hr />
       <StyledRes>
-        <AnswerList />
-        <AnswerList />
+        {quizList.map((quiz) => {
+          return <AnswerList key={quiz.title} quiz={quiz} />;
+        })}
       </StyledRes>
 
       <p
@@ -43,17 +83,19 @@ export const MakeQuiz = () => {
     </StyledDiv>
   );
 };
-
-const AnswerList = () => {
+type TTProps = {
+  quiz: Quiz;
+};
+const AnswerList = ({ quiz }: TTProps) => {
   return (
     <StyledProblem>
-      <p>문제 제목</p>
-      <p>주관식</p>
+      <p>{quiz.title}</p>
+      <p>{quiz.type == "1" ? "주관식" : "주관식"}</p>
     </StyledProblem>
   );
 };
 
-const Obj = () => {
+const Obj = ({ mile_id, settQuizList, quizList }: TempProps) => {
   const title = useRef<HTMLInputElement>(null);
   const content = useRef<HTMLInputElement>(null);
   const one = useRef<HTMLInputElement>(null);
@@ -73,13 +115,20 @@ const Obj = () => {
       three.current!.value,
       four.current!.value,
     ];
-
     const answer = ans.current!.value;
-
-    //axios.post()
+    const newQuiz: Quiz = {
+      title: ObjT,
+      desc: ObjContent,
+      type: (0).toString(),
+      etc: Bogi,
+      answer: answer,
+    };
+    let temp = [...quizList];
+    temp.push(newQuiz);
+    settQuizList(temp);
   };
 
-  const check = () => {
+  const check = (content_id: string) => {
     Swal.fire({
       icon: "info",
       title: "AI에게 문제 생성을 요청중입니다.",
@@ -88,6 +137,25 @@ const Obj = () => {
       didOpen: () => {
         Swal.showLoading();
         //axios.post()
+        axios
+          .post(
+            `http://localhost:8000/milestone/${mile_id}/content/${content_id}/aiquiz`,
+            {},
+            { params: { type: 0 } }
+          )
+          .then((res) => {
+            title.current!.value = res.data.title;
+            content.current!.value = res.data.desc;
+            ans.current!.value = res.data.answer;
+            one.current!.value = res.data.option[0];
+            two.current!.value = res.data.option[1];
+            three.current!.value = res.data.option[2];
+            four.current!.value = res.data.option[3];
+            Swal.fire({
+              icon: "success",
+              title: "AI가 문제를 만들었습니다",
+            });
+          });
       },
     });
   };
@@ -100,7 +168,7 @@ const Obj = () => {
         id="outlined-multiline-static"
         color="primary"
         variant="standard"
-        label="문제 제목 입력"
+        placeholder="문제 제목 입력"
         style={{ width: "100%", fontFamily: "HealthsetGothicLight" }}
         inputRef={title}
       />
@@ -110,7 +178,7 @@ const Obj = () => {
         color="primary"
         multiline
         rows={3}
-        label="문제 설명 입력"
+        placeholder="문제 설명 입력"
         style={{ width: "100%", fontFamily: "HealthsetGothicLight" }}
         inputRef={content}
       />
@@ -120,7 +188,7 @@ const Obj = () => {
           <TextField
             id="outlined-multiline-static"
             color="primary"
-            label="1번 보기 입력"
+            placeholder="1번 보기 입력"
             style={{ width: "100%", fontFamily: "HealthsetGothicLight" }}
             inputRef={one}
           />
@@ -131,7 +199,7 @@ const Obj = () => {
           <TextField
             id="outlined-multiline-static"
             color="primary"
-            label="2번 보기 입력"
+            placeholder="2번 보기 입력"
             style={{ width: "100%", fontFamily: "HealthsetGothicLight" }}
             inputRef={two}
           />
@@ -142,7 +210,7 @@ const Obj = () => {
           <TextField
             id="outlined-multiline-static"
             color="primary"
-            label="3번 보기 입력"
+            placeholder="3번 보기 입력"
             style={{ width: "100%", fontFamily: "HealthsetGothicLight" }}
             inputRef={three}
           />
@@ -153,7 +221,7 @@ const Obj = () => {
           <TextField
             id="outlined-multiline-static"
             color="primary"
-            label="4번 보기 입력"
+            placeholder="4번 보기 입력"
             style={{ width: "100%", fontFamily: "HealthsetGothicLight" }}
             inputRef={four}
           />
@@ -163,7 +231,7 @@ const Obj = () => {
       <TextField
         id="outlined-multiline-static"
         color="primary"
-        label="정답 번호를 입력해주세요 ex) 3"
+        placeholder="정답 번호를 입력해주세요 ex) 3"
         style={{ width: "100%", fontFamily: "HealthsetGothicLight" }}
         inputRef={ans}
       />
@@ -183,30 +251,12 @@ const Obj = () => {
             강의자료를 선택해주세요.
           </p>
           <StyledOne>
-            <p>강의자료1.pdf</p>
+            <p>운동량 보존 법칙.pdf</p>
             <IoCheckboxOutline
               size={25}
               title="선택"
               style={{ cursor: "pointer" }}
-              onClick={() => check()}
-            />
-          </StyledOne>
-          <StyledOne>
-            <p>강의자료1.pdf</p>
-            <IoCheckboxOutline
-              size={25}
-              title="선택"
-              style={{ cursor: "pointer" }}
-              onClick={() => check()}
-            />
-          </StyledOne>
-          <StyledOne>
-            <p>강의자료1.pdf</p>
-            <IoCheckboxOutline
-              size={25}
-              title="선택"
-              style={{ cursor: "pointer" }}
-              onClick={() => check()}
+              onClick={() => check("199a74cd-e234-43ad-8c85-31798a30d12a")}
             />
           </StyledOne>
         </StyledTrack>
@@ -217,7 +267,7 @@ const Obj = () => {
   );
 };
 
-const Sub = () => {
+const Sub = ({ mile_id, settQuizList, quizList }: TempProps) => {
   const title = useRef<HTMLInputElement>(null);
   const content = useRef<HTMLInputElement>(null);
   const ans = useRef<HTMLInputElement>(null);
@@ -228,11 +278,20 @@ const Sub = () => {
     const SubT = title.current!.value;
     const SubContent = content.current!.value;
     const answer = ans.current!.value;
-
+    const newQuiz: Quiz = {
+      title: title.current!.value,
+      desc: content.current!.value,
+      type: (1).toString(),
+      etc: [],
+      answer: ans.current!.value,
+    };
+    let temp = [...quizList];
+    temp.push(newQuiz);
+    settQuizList(temp);
     //axios.post
   };
 
-  const check = () => {
+  const check = (content_id: string) => {
     Swal.fire({
       icon: "info",
       title: "AI에게 문제 생성을 요청중입니다.",
@@ -241,6 +300,22 @@ const Sub = () => {
       didOpen: () => {
         Swal.showLoading();
         //axios.post()
+        axios
+          .post(
+            `http://localhost:8000/milestone/${mile_id}/content/${content_id}/aiquiz`,
+            {},
+            { params: { type: 1 } }
+          )
+          .then((res) => {
+            title.current!.value = res.data.title;
+            content.current!.value = res.data.desc;
+            ans.current!.value = res.data.answer;
+            console.log(res);
+            Swal.fire({
+              icon: "success",
+              title: "AI가 문제를 만들었습니다",
+            });
+          });
       },
     });
   };
@@ -253,7 +328,7 @@ const Sub = () => {
         id="outlined-multiline-static"
         color="primary"
         variant="standard"
-        label="문제 제목 입력"
+        placeholder="문제 제목 입력"
         style={{ width: "100%", fontFamily: "HealthsetGothicLight" }}
         inputRef={title}
       />
@@ -263,7 +338,7 @@ const Sub = () => {
         color="primary"
         multiline
         rows={3}
-        label="문제 설명 입력"
+        placeholder="문제 설명 입력"
         style={{ width: "100%", fontFamily: "HealthsetGothicLight" }}
         inputRef={content}
       />
@@ -273,7 +348,7 @@ const Sub = () => {
         multiline
         rows={3}
         color="primary"
-        label="모범 답안을 입력해주세요"
+        placeholder="모범 답안을 입력해주세요"
         style={{ width: "100%", fontFamily: "HealthsetGothicLight" }}
         inputRef={ans}
       />
@@ -292,30 +367,12 @@ const Sub = () => {
             강의자료를 선택해주세요.
           </p>
           <StyledOne>
-            <p>강의자료1.pdf</p>
+            <p>운동량 보존 법칙.pdf</p>
             <IoCheckboxOutline
               size={25}
               title="선택"
               style={{ cursor: "pointer" }}
-              onClick={() => check()}
-            />
-          </StyledOne>
-          <StyledOne>
-            <p>강의자료1.pdf</p>
-            <IoCheckboxOutline
-              size={25}
-              title="선택"
-              style={{ cursor: "pointer" }}
-              onClick={() => check()}
-            />
-          </StyledOne>
-          <StyledOne>
-            <p>강의자료1.pdf</p>
-            <IoCheckboxOutline
-              size={25}
-              title="선택"
-              style={{ cursor: "pointer" }}
-              onClick={() => check()}
+              onClick={() => check("199a74cd-e234-43ad-8c85-31798a30d12a")}
             />
           </StyledOne>
         </StyledTrack>
