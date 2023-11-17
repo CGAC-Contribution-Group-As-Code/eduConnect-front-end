@@ -36,6 +36,13 @@ export const Header = () => {
     });
   };
 
+  const nothing = () => {
+    Swal.fire({
+      icon: "warning",
+      title: "로그인을 먼저 진행해 주세요",
+    });
+  };
+
   return (
     <div className="header">
       <div className="headerBody">
@@ -43,12 +50,12 @@ export const Header = () => {
           src="/image/logo.png"
           alt="logo"
           width="150px"
-          onClick={() => navigate("/")}
+          onClick={role !== -1 ? () => navigate("/home") : () => nothing()}
           style={{ cursor: "pointer" }}
         />
         {role === -1 ? (
           <p
-            onClick={() => navigate("/login")}
+            onClick={() => navigate("/")}
             style={{ cursor: "pointer", fontSize: "1.2em", fontWeight: "600" }}
           >
             Login

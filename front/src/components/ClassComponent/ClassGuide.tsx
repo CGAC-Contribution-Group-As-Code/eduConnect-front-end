@@ -9,6 +9,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useMutation, useQueryClient } from "react-query";
 import { GuideContent } from "./GuideContent";
+import { BiError } from "react-icons/bi";
 
 interface MileStone {
   _id: string;
@@ -19,32 +20,34 @@ interface MileStone {
 
 export const ClassGuide = () => {
   const [make, setMake] = useState<boolean>(false);
-  const [isOpen, setIsOpen] = useState<number>(0);
+  const [isOpen, setIsOpen] = useState<string>("");
+  const room_id = decodeURI(window.location.pathname).split("/").at(-2);
   const {
     data: milestone_data,
     isLoading,
     isError,
   } = useQuery<MileStone[], Error>({
-    queryKey: "milestonList",
+    queryKey: ["milestonList", room_id],
     queryFn: async () => {
       const response = await axios.get<MileStone[]>(
-        "http://localhost:8000/milestone"
+        "http://localhost:8000/milestone",
+        { params: { room_id: room_id } }
       );
       return response.data;
     },
   });
 
   const onCloseHandler = () => {
-    setIsOpen(0);
+    setIsOpen("");
   };
 
-  const openHandler = (id: number) => {
+  const openHandler = (id: string) => {
     setIsOpen(id);
   };
 
   return (
     <StyledContainer>
-      {isOpen === 0 ? (
+      {isOpen === "" ? (
         <>
           <div
             style={{
@@ -93,7 +96,7 @@ export const ClassGuide = () => {
         </>
       ) : (
         <>
-          <GuideContent id={isOpen} onCloseHandler={onCloseHandler} />
+          <GuideContent mile_id={isOpen} onCloseHandler={onCloseHandler} />
         </>
       )}
     </StyledContainer>
@@ -103,21 +106,41 @@ export const ClassGuide = () => {
 // 각 이정표
 
 type Props = {
-  openHandler: (id: number) => void;
+  openHandler: (id: string) => void;
   milestone_data: MileStone[] | undefined;
 };
 
 const Milestone = ({ openHandler, milestone_data }: Props) => {
-  if (milestone_data) {
+  console.log(milestone_data);
+
+  if (milestone_data !== undefined) {
     return (
       <>
-        {milestone_data.map((milestone) => {
+        {milestone_data!.map((milestone) => {
           return (
-            <StyledBox key={milestone._id} onClick={() => openHandler(1)}>
-              <p style={{ fontWeight: "600" }}>{milestone.name}</p>
-              <p style={{ fontWeight: "600" }}>{milestone.desc}</p>
-              <p style={{ fontSize: "0.9em", color: "gray", textAlign: "end" }}>
-                {new Date(milestone.last_modify).toDateString()}
+            <StyledBox
+              key={milestone._id}
+              onClick={() => openHandler(milestone._id)}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  flexFlow: "row nowrap",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <p style={{ fontWeight: "600", fontSize: "1.1em" }}>
+                  {milestone.name}
+                </p>
+
+                <p style={{ fontSize: "0.9em", color: "gray" }}>
+                  {new Date(milestone.last_modify).toDateString()}
+                </p>
+              </div>
+
+              <p style={{ color: "gray", fontSize: "0.9em" }}>
+                {milestone.desc}
               </p>
             </StyledBox>
           );
@@ -126,12 +149,12 @@ const Milestone = ({ openHandler, milestone_data }: Props) => {
     );
   } else {
     return (
-      <StyledBox onClick={() => openHandler(1)}>
-        <p style={{ fontWeight: "600" }}>이차방정식과 함수</p>
-        <p style={{ fontSize: "0.9em", color: "gray", textAlign: "end" }}>
-          2023.11.15
+      <StyledNone>
+        <BiError size={25} color="red" />
+        <p style={{ fontWeight: "600", fontSize: "1.2em" }}>
+          이정표를 생성해주세요
         </p>
-      </StyledBox>
+      </StyledNone>
     );
   }
 };
@@ -150,12 +173,14 @@ interface MakeMilestone {
 const CreateMilestone = ({ setMake }: Offprops) => {
   const mileName = useRef<HTMLInputElement>(null);
   const descName = useRef<HTMLInputElement>(null);
+  const room_id = decodeURI(window.location.pathname).split("/").at(-2);
 
   const CreateMile = async (data: MakeMilestone) => {
     console.log(data);
     const { data: response } = await axios.post(
       `http://localhost:8000/milestone/`,
-      data
+      data,
+      { params: { room_id: room_id } }
     );
     return response.data;
   };
@@ -174,7 +199,7 @@ const CreateMilestone = ({ setMake }: Offprops) => {
       console.log("error");
     },
     onSettled: () => {
-      queryClient.invalidateQueries("milestonList");
+      queryClient.invalidateQueries(["milestonList", room_id]);
     },
   });
 
@@ -256,7 +281,7 @@ const StyledBox = styled.div`
   border-radius: 15px;
   background-color: aliceblue;
   cursor: pointer;
-  gap: 10px;
+  gap: 20px;
 `;
 
 const StyledContainer = styled.div`
@@ -270,4 +295,15 @@ const StyledDiv = styled.div`
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   padding: 0.5em;
+`;
+
+const StyledNone = styled.div`
+  grid-column: 1/3;
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 10px;
+  width: 100%;
+  height: 350px;
+  justify-content: center;
+  align-items: center;
 `;

@@ -6,19 +6,53 @@ import { ClassQuiz } from "./ClassQuiz";
 import { AiOutlineDownload, AiOutlineDelete } from "react-icons/ai";
 import Swal from "sweetalert2";
 import { MdOutlineBookmarkAdd } from "react-icons/md";
+import { useSelector } from "react-redux";
 
 type Props = {
-  id: number;
+  mile_id: string;
   onCloseHandler: () => void;
 };
 
-export const GuideContent = ({ id, onCloseHandler }: Props) => {
-  var mileStoneId = id;
+interface RootState {
+  user: {
+    id: string;
+    role: number;
+  };
+}
+
+export const GuideContent = ({ mile_id, onCloseHandler }: Props) => {
+  console.log(mile_id);
+
+  let state = useSelector((state: RootState) => {
+    return state;
+  });
+  const { user } = state;
+  const { id, role } = user;
 
   const [isQuiz, setIsQuiz] = useState<boolean>(true);
 
   return (
     <StyledDiv>
+      <div
+        style={{
+          display: "flex",
+          flexFlow: "row nowrap",
+          width: "100%",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <p style={{ fontWeight: "600", color: `${theme.navy}` }}>이정표 이름</p>
+
+        <IoMdClose
+          size={24}
+          color="red"
+          title="이정표 나가기"
+          style={{ cursor: "pointer" }}
+          onClick={onCloseHandler}
+        />
+      </div>
+
       <p
         style={{
           fontSize: "0.9em",
@@ -45,6 +79,7 @@ export const GuideContent = ({ id, onCloseHandler }: Props) => {
                 ? {
                     color: `${theme.skyblue}`,
                     fontWeight: "600",
+                    fontSize: "1.2em",
                   }
                 : { color: "gray" }
             }
@@ -58,6 +93,7 @@ export const GuideContent = ({ id, onCloseHandler }: Props) => {
                 ? {
                     color: `${theme.skyblue}`,
                     fontWeight: "600",
+                    fontSize: "1.2em",
                   }
                 : { color: "gray" }
             }
@@ -66,16 +102,14 @@ export const GuideContent = ({ id, onCloseHandler }: Props) => {
           </StyledP>
         </StyledRow>
 
-        <StyledRow>
-          <p style={{ fontWeight: "500", fontSize: "0.9em" }}>이정표 이름</p>
-          <IoMdClose
-            size={24}
-            color="red"
-            title="이정표 나가기"
-            style={{ cursor: "pointer" }}
-            onClick={onCloseHandler}
-          />
-        </StyledRow>
+        {role === 1 && isQuiz === false ? (
+          <StyledRow id="upload" style={{ alignSelf: "end" }}>
+            <p>강의자료 업로드</p>
+            <MdOutlineBookmarkAdd size={23} color={theme.skyblue} />
+          </StyledRow>
+        ) : (
+          <></>
+        )}
       </div>
 
       {isQuiz ? <ClassQuiz /> : <Lecture />}
@@ -84,15 +118,16 @@ export const GuideContent = ({ id, onCloseHandler }: Props) => {
 };
 
 const Lecture = () => {
+  let state = useSelector((state: RootState) => {
+    return state;
+  });
+  const { user } = state;
+  const { id, role } = user;
   return (
     <>
-      <StyledRow id="upload" style={{ alignSelf: "end" }}>
-        <p>강의자료 업로드</p>
-        <MdOutlineBookmarkAdd size={23} color={theme.skyblue} />
-      </StyledRow>
       <StyledLecture>
-        <Paper role={1} name={"강의자료 1.pdf"} />
-        <Paper role={0} name={"강의자료 1.pdf"} />
+        <Paper role={role} name={"강의자료 1.pdf"} />
+        <Paper role={role} name={"강의자료 1.pdf"} />
       </StyledLecture>
     </>
   );

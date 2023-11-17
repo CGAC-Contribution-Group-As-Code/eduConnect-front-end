@@ -10,6 +10,14 @@ import { ClassQuiz } from "../components/ClassComponent/ClassQuiz";
 import { StdMng } from "../components/ClassComponent/ifTeacher/StdMng";
 import { QuizMng } from "../components/ClassComponent/ifTeacher/QuizMng";
 import { QAMng } from "../components/ClassComponent/ifTeacher/QAMng";
+import { useSelector } from "react-redux";
+
+interface RootState {
+  user: {
+    id: string;
+    role: number;
+  };
+}
 
 export const Room = () => {
   const path = decodeURI(window.location.pathname).split("/");
@@ -17,6 +25,12 @@ export const Room = () => {
   const now = path.at(-2);
 
   const [page, setPage] = useState<number>(0);
+
+  let state = useSelector((state: RootState) => {
+    return state;
+  });
+  const { user } = state;
+  const { id, role } = user;
 
   const SwitchPage = (e: number) => {
     switch (e) {
@@ -52,9 +66,15 @@ export const Room = () => {
             <Styledp onClick={() => setPage(0)}>Home</Styledp>
             <Styledp onClick={() => setPage(1)}>Milestone</Styledp>
             <Styledp onClick={() => setPage(2)}>Q&A</Styledp>
-            <Styledp onClick={() => setPage(3)}>학습자 관리</Styledp>
-            <Styledp onClick={() => setPage(4)}>Quiz 관리</Styledp>
-            <Styledp onClick={() => setPage(5)}>Q&A 관리</Styledp>
+            {role === 1 ? (
+              <>
+                <Styledp onClick={() => setPage(3)}>학습자 관리</Styledp>
+                <Styledp onClick={() => setPage(4)}>Quiz 관리</Styledp>
+                <Styledp onClick={() => setPage(5)}>Q&A 관리</Styledp>
+              </>
+            ) : (
+              <></>
+            )}
           </StyledMenu>
           <StyledContent>
             <p

@@ -30,7 +30,6 @@ export const Login = () => {
   const pw = useRef<HTMLInputElement>(null);
 
   const LoginMethod = async (data: User) => {
-    console.log(data);
     const { data: res } = await axios.post(
       "http://localhost:8000/user/login",
       data
@@ -51,7 +50,7 @@ export const Login = () => {
         icon: "success",
         title: `${data.user_id}님 안녕하세요!`,
       });
-      navigate("/");
+      navigate("/home");
     },
     onError: () => {
       Swal.fire({

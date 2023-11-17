@@ -38,7 +38,6 @@ export const Classroom = () => {
     return (
       <>
         {classroom.map((room) => {
-          console.log(room)
           return (
             <StyledBox
               key={room._id}
@@ -55,7 +54,9 @@ export const Classroom = () => {
                 }}
               >
                 <p>교육자 : {room.teacher}님</p>
-                <p>현재 인원 : {room.member}명</p>
+                <p style={{ color: "gray", fontSize: "0.9em" }}>
+                  현재 인원 : {room.member}명
+                </p>
               </div>
             </StyledBox>
           );
