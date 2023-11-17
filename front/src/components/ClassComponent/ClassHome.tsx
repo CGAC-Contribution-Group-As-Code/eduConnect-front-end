@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { TiPin } from "react-icons/ti";
 import theme from "../../styles/theme";
 import { BsBookmarks } from "react-icons/bs";
-import { MdOutlineBookmarkAdd } from "react-icons/md";
+
 import Swal from "sweetalert2";
 import { AiOutlineDownload, AiOutlineDelete } from "react-icons/ai";
 
@@ -55,16 +55,16 @@ export const ClassHome = () => {
           <p style={{ fontWeight: "600" }}>전체 강의자료</p>
         </StyledRow>
 
-        <StyledRow
+        {/* <StyledRow
           style={{
             cursor: "pointer",
           }}
           id="upload"
         >
-          {/* 클릭이벤트 -> 내부 페이지 전환 or 업로드 드랍다운 open
+       
           <p>강의자료 업로드</p>
-          <MdOutlineBookmarkAdd size={23} color={theme.skyblue} /> */}
-        </StyledRow>
+          <MdOutlineBookmarkAdd size={23} color={theme.skyblue} />
+        </StyledRow> */}
       </div>
       <div
         style={{

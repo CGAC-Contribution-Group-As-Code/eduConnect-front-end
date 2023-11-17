@@ -54,6 +54,7 @@
 }
 
 #upload :hover {
+  cursor: pointer;
   color: #389bf8;
   font-weight: 600;
 }
