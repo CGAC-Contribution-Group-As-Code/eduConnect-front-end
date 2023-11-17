@@ -216,40 +216,6 @@ const CreateMilestone = ({ setMake }: Offprops) => {
         inputRef={descName}
       />
 
-      <hr />
-
-      <p>자료 업로드</p>
-
-      <StyledRow>
-        <TextField
-          id="outlined-basic"
-          label="강의 자료명"
-          variant="outlined"
-          style={{ width: "40%" }}
-          inputRef={fN1}
-        />
-        <input
-          type="file"
-          style={{ fontWeight: "500 !important" }}
-          onChange={fileUploadValidHandler}
-        />
-      </StyledRow>
-
-      <StyledRow>
-        <TextField
-          id="outlined-basic"
-          label="강의 자료명"
-          variant="outlined"
-          style={{ width: "40%" }}
-          inputRef={fN2}
-        />
-        <input
-          type="file"
-          style={{ fontWeight: "500 !important" }}
-          onChange={fileUploadValidHandler}
-        />
-      </StyledRow>
-
       <p
         style={{
           fontWeight: "600",
