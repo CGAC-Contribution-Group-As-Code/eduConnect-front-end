@@ -21,9 +21,7 @@ export const Classroom = () => {
   } = useQuery<Room[], Error>({
     queryKey: "rooms",
     queryFn: async () => {
-      const response = await axios.get<Room[]>(
-        "http://localhost:8000/all-room"
-      );
+      const response = await axios.get<Room[]>("http://localhost:8000/room");
       return response.data;
     },
   });

@@ -52,7 +52,7 @@ export const ClassHome = () => {
       >
         <StyledRow>
           <BsBookmarks size={23} color={theme.navy} />
-          <p style={{ fontWeight: "600" }}>강의자료</p>
+          <p style={{ fontWeight: "600" }}>전체 강의자료</p>
         </StyledRow>
 
         <StyledRow
@@ -61,9 +61,9 @@ export const ClassHome = () => {
           }}
           id="upload"
         >
-          {/* 클릭이벤트 -> 내부 페이지 전환 or 업로드 드랍다운 open */}
+          {/* 클릭이벤트 -> 내부 페이지 전환 or 업로드 드랍다운 open
           <p>강의자료 업로드</p>
-          <MdOutlineBookmarkAdd size={23} color={theme.skyblue} />
+          <MdOutlineBookmarkAdd size={23} color={theme.skyblue} /> */}
         </StyledRow>
       </div>
       <div
@@ -103,7 +103,8 @@ const Paper = ({ role, name }: TypeProps) => {
   };
   return (
     <StyledPaper>
-      <p>{n}</p>
+      <p style={{ cursor: "pointer" }}>{n}</p>
+      {/* 클릭 이벤트 -> 이정표의 강의자료 화면으로 이동 */}
       {e === 1 ? (
         <StyledRow>
           <AiOutlineDownload

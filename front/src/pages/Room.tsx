@@ -16,9 +16,9 @@ export const Room = () => {
 
   console.log(name, now);
 
-  const [page, setPage] = useState<Number>(0);
+  const [page, setPage] = useState<number>(0);
 
-  const SwitchPage = (e: Number) => {
+  const SwitchPage = (e: number) => {
     switch (e) {
       case 0: // HOME
         return <ClassHome />;
