@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { TiPin } from "react-icons/ti";
 import theme from "../../styles/theme";
 import { BsBookmarks } from "react-icons/bs";
-
+import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { AiOutlineDownload, AiOutlineDelete } from "react-icons/ai";
 
@@ -15,7 +15,20 @@ export interface TypeProps {
   name: string;
 }
 
+interface RootState {
+  user: {
+    id: string;
+    role: number;
+  };
+}
+
 export const ClassHome = () => {
+  let state = useSelector((state: RootState) => {
+    return state;
+  });
+  const { user } = state;
+  const { id, role } = user;
+
   return (
     <StyledDiv>
       <StyledNotice>
@@ -33,9 +46,9 @@ export const ClassHome = () => {
           <p style={{ fontWeight: "600" }}>강의실 공지사항</p>
         </div>
 
-        <li>강의실 내 잡담 금지</li>
-        <li>AI Q&A로 저메추 금지</li>
-        <li>선생도 사람이다.</li>
+        <li>물리과목에 대한 이해도 높이기</li>
+        <li>한국의 역사를 잊은 사람이 되지 않기</li>
+        <li>오늘 공부해야 내일의 여자친구가 예쁘다.</li>
       </StyledNotice>
 
       <div
@@ -74,10 +87,9 @@ export const ClassHome = () => {
           margin: "0 1vw",
         }}
       >
-        <Paper role={1} name={"강의자료 1.pdf"} />
-        <Paper role={0} name={"강의자료 2.hwp"} />
-        <Paper role={0} name={"강의자료 2.hwp"} />
-        <Paper role={0} name={"강의자료 2.hwp"} />
+        <Paper role={role} name={"운동량 보존 법칙.pdf"} />
+        <Paper role={role} name={"임진왜란과 신미양요.pdf"} />
+        <Paper role={role} name={"뉴턴의 만유인력.pdf"} />
       </div>
     </StyledDiv>
   );
