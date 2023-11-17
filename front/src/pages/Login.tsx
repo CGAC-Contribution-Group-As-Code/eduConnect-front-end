@@ -9,19 +9,77 @@ import FormControl from "@mui/material/FormControl";
 import TextField from "@mui/material/TextField";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import { UseMutationResult, useMutation, useQueryClient } from "react-query";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setUser } from "../api/reducers";
+
+interface User {
+  id: string;
+  pw: string;
+  role: number;
+}
+
+interface EnterUser {
+  id: string;
+  role: number;
+}
 
 export const Login = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const dispatch = useDispatch();
 
-  const id = useRef<string>("");
-  const pw = useRef<string>("");
+  const [value, setValue] = React.useState("0");
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setValue((event.target as HTMLInputElement).value);
+  };
+
+  const id = useRef<HTMLInputElement>(null);
+  const pw = useRef<HTMLInputElement>(null);
+
+  const LoginMethod = async (data: User) => {
+    const { data: res } = await axios.post(``, data);
+    return res.data;
+  };
+
+  const { mutate, isLoading } = useMutation(LoginMethod, {
+    onSuccess: (data) => {
+      console.log(data);
+      // const userInfo = data.uid
+      Swal.fire({
+        icon: "success",
+        title: `${data.id}}님 안녕하세요!`,
+      });
+      navigate("/");
+    },
+    onError: () => {
+      Swal.fire({
+        icon: "error",
+        title: "로그인에 실패했습니다.",
+      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries("success");
+    },
+  });
 
   const login = () => {
-    Swal.fire({
-      icon: "success",
-      title: "안녕하세요!",
-    });
-    navigate("/");
+    let uid = id.current!.value;
+    let upw = pw.current!.value;
+
+    var data = {
+      id: uid,
+      pw: upw,
+      role: parseInt(value, 10),
+    };
+
+    const userInfo = {
+      ...data,
+    };
+
+    mutate(userInfo);
   };
 
   return (
@@ -34,6 +92,8 @@ export const Login = () => {
               row
               aria-labelledby="demo-row-radio-buttons-group-label"
               name="row-radio-buttons-group"
+              value={value}
+              onChange={handleChange}
             >
               <FormControlLabel value="0" control={<Radio />} label="학습자" />
               <FormControlLabel value="1" control={<Radio />} label="교육자" />
@@ -49,12 +109,18 @@ export const Login = () => {
               paddingBottom: "20px",
             }}
           >
-            <TextField id="outlined-basic" label="ID" variant="outlined" />
+            <TextField
+              id="outlined-basic"
+              label="ID"
+              variant="outlined"
+              ref={id}
+            />
             <TextField
               id="outlined-basic"
               label="Password"
               variant="outlined"
               type="password"
+              ref={pw}
             />
           </div>
 

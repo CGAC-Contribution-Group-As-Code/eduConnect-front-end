@@ -7,6 +7,8 @@ import { BrowserRouter } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import GlobalStyle from "./styles/global-style";
 import { QueryClientProvider, QueryClient } from "react-query";
+import { Provider } from "react-redux";
+import { store } from "./api/reducers";
 
 const queryClient = new QueryClient();
 
@@ -16,11 +18,13 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <>
-    <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
-        <App />
-      </QueryClientProvider>
-    </BrowserRouter>
+    <Provider store={store}>
+      <BrowserRouter>
+        <QueryClientProvider client={queryClient}>
+          <App />
+        </QueryClientProvider>
+      </BrowserRouter>
+    </Provider>
   </>
 );
 

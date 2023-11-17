@@ -16,8 +16,6 @@ export const Room = () => {
   const name = path.at(-1);
   const now = path.at(-2);
 
-  console.log(name, now);
-
   const [page, setPage] = useState<number>(0);
 
   const SwitchPage = (e: number) => {
