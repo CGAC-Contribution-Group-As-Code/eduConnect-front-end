@@ -12,7 +12,6 @@ import axios from "axios";
 import { HiUserMinus } from "react-icons/hi2";
 import { useSelector } from "react-redux";
 
-
 interface RootState {
   user: {
     id: string;
@@ -76,12 +75,11 @@ const CreateRoom: React.FC<ChildProps> = ({ nameRef, roomDescRef }) => {
   const roomDescValue = roomDescRef.current?.value;
   const navigate = useNavigate();
 
-  let state = useSelector((state: RootState) => {
+  const state = useSelector((state: RootState) => {
     return state;
   });
   const { user } = state;
   const { id, role } = user;
-
 
   interface User {
     _id: string;
@@ -116,7 +114,7 @@ const CreateRoom: React.FC<ChildProps> = ({ nameRef, roomDescRef }) => {
   }
 
   const add = (user_id: string, _id: string) => {
-    const isDuplicate = std.some(item => item._id === _id);
+    const isDuplicate = std.some((item) => item._id === _id);
     if (isDuplicate) {
       Swal.fire({
         icon: "warning",
@@ -141,23 +139,25 @@ const CreateRoom: React.FC<ChildProps> = ({ nameRef, roomDescRef }) => {
   }
 
   function createRoom(): void {
-    axios.post("http://localhost:8000/room", {
-      name: nameValue,
-      desc: roomDescValue,
-      teacher: id,
-      student: std
-    }).then((res) => {
-      if(res.data){
-        Swal.fire({
-          icon: "success",
-          title: `${nameValue}가 개설되었습니다.`,
-        }).then((swalRes) => {
-          if (swalRes.isConfirmed) {
-            navigate(`/home`);
-          }
-        });
-      }
-    })
+    axios
+      .post("http://localhost:8000/room", {
+        name: nameValue,
+        desc: roomDescValue,
+        teacher: id,
+        student: std,
+      })
+      .then((res) => {
+        if (res.data) {
+          Swal.fire({
+            icon: "success",
+            title: `${nameValue}가 개설되었습니다.`,
+          }).then((swalRes) => {
+            if (swalRes.isConfirmed) {
+              navigate(`/home`);
+            }
+          });
+        }
+      });
   }
 
   return (

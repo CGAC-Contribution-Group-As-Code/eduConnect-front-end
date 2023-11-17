@@ -13,13 +13,12 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 
-
-interface QuestionInfo{
-    _id: string
-    writer: string
-    time: string,
-    desc: string,
-    answer: []
+interface QuestionInfo {
+  _id: string;
+  writer: string;
+  time: string;
+  desc: string;
+  answer: [];
 }
 
 interface RootState {
@@ -28,7 +27,6 @@ interface RootState {
     role: number;
   };
 }
-
 
 export const ClassQA = () => {
   const room_id = decodeURI(window.location.pathname).split("/").at(-2);
@@ -42,7 +40,9 @@ export const ClassQA = () => {
   } = useQuery<QuestionInfo[], Error>({
     queryKey: reload,
     queryFn: async () => {
-      const response = await axios.get<QuestionInfo[]>(`http://localhost:8000/room/${room_id}/questions`);
+      const response = await axios.get<QuestionInfo[]>(
+        `http://localhost:8000/room/${room_id}/questions`
+      );
       return response.data;
     },
   });
@@ -80,14 +80,26 @@ export const ClassQA = () => {
         </StyledRow>
       )}
 
-      {openQuestion ? <MakeQuestion updateReloadState={updateReloadState}/> : <></>}
+      {openQuestion ? (
+        <MakeQuestion updateReloadState={updateReloadState} />
+      ) : (
+        <></>
+      )}
 
       <StyledCon>
-        {
-          question && question.length > 0 ?  question.map((questionInfo) => {
-            return <Question updateReloadState={updateReloadState} questionInfo={questionInfo} key={questionInfo.time}/>
-          }) : <></>
-        }
+        {question && question.length > 0 ? (
+          question.map((questionInfo) => {
+            return (
+              <Question
+                updateReloadState={updateReloadState}
+                questionInfo={questionInfo}
+                key={questionInfo.time}
+              />
+            );
+          })
+        ) : (
+          <></>
+        )}
       </StyledCon>
     </div>
   );
@@ -107,29 +119,32 @@ const MakeQuestion: React.FC<MakeQuestionProps> = ({ updateReloadState }) => {
   const room_id = decodeURI(window.location.pathname).split("/").at(-2);
 
   function onSubmitHandler(): void {
-    console.log(id, content.current?.value)
+    console.log(id, content.current?.value);
 
-    axios.post("http://localhost:8000/room/questions", {
-      room_id: room_id,
-      writer: id,
-      desc:  content.current?.value
-    }).then((res) => {
-      if(res.data){
+    axios
+      .post("http://localhost:8000/room/questions", {
+        room_id: room_id,
+        writer: id,
+        desc: content.current?.value,
+      })
+      .then((res) => {
+        if (res.data) {
+          Swal.fire({
+            icon: "success",
+            title: "질문이 생성되었습니다",
+          }).then((swalRes) => {
+            if (swalRes.isConfirmed) {
+              updateReloadState("question" + crypto.randomUUID());
+            }
+          });
+        }
+      })
+      .catch(() => {
         Swal.fire({
-          icon: "success",
-          title: "질문이 생성되었습니다",
-        }).then((swalRes) => {
-          if(swalRes.isConfirmed){
-            updateReloadState("question"+crypto.randomUUID());
-          }
-        })
-      }
-    }).catch(() => {
-      Swal.fire({
-        icon: "error",
-        title: "질문 생성에 실패했습니다.",
+          icon: "error",
+          title: "질문 생성에 실패했습니다.",
+        });
       });
-    })
   }
 
   return (
@@ -163,7 +178,7 @@ const MakeQuestion: React.FC<MakeQuestionProps> = ({ updateReloadState }) => {
         onClick={() => onSubmitHandler()}
       >
         <TbMessageCircleQuestion color={theme.navy} size={25} />
-        <StyledP >질문 등록</StyledP>
+        <StyledP>질문 등록</StyledP>
       </div>
     </div>
   );
@@ -175,10 +190,46 @@ interface QuestionProps {
 }
 
 // 질문 component
-const Question: React.FC<QuestionProps> = ({questionInfo, updateReloadState}) => {
+const Question: React.FC<QuestionProps> = ({
+  questionInfo,
+  updateReloadState,
+}) => {
   const [openAnswer, setOpenAnswer] = useState<boolean>(false);
   const [makeAnswer, setMakeAnswer] = useState<boolean>(false);
   const answer = questionInfo.answer;
+
+  function onAISubmitHandler(): void {
+    console.log(questionInfo);
+    axios
+      .post(
+        "http://localhost:8000/room/ai-answer",
+        {},
+        {
+          params: {
+            question: questionInfo.desc,
+            q_id: questionInfo._id,
+          },
+        }
+      )
+      .then((res) => {
+        if (res.data) {
+          Swal.fire({
+            icon: "success",
+            title: "ai답변이 생성되었습니다",
+          }).then((swalRes) => {
+            if (swalRes.isConfirmed) {
+              updateReloadState("question_answer" + crypto.randomUUID());
+            }
+          });
+        }
+      })
+      .catch(() => {
+        Swal.fire({
+          icon: "error",
+          title: "ai답변 생성에 실패했습니다.",
+        });
+      });
+  }
 
   return (
     <StyledQuestion>
@@ -224,20 +275,28 @@ const Question: React.FC<QuestionProps> = ({questionInfo, updateReloadState}) =>
               <p>답변 작성</p>
             </StyledRow2>
 
-            <StyledRow2>
+            <StyledRow2 onClick={() => onAISubmitHandler()}>
               <AiOutlineRobot size={23} />
               <p>AI에게 질문하기</p>
             </StyledRow2>
           </div>
 
-          {makeAnswer ? <MakeAnswer updateReloadState={updateReloadState} question_id={questionInfo._id}/> : <></>}
+          {makeAnswer ? (
+            <MakeAnswer
+              updateReloadState={updateReloadState}
+              question_id={questionInfo._id}
+            />
+          ) : (
+            <></>
+          )}
 
-          {
-            answer && answer.length > 0 ? answer.map((value) => {
-              return <Answer info={value} />
-            }) : <div/>
-          }
-
+          {answer && answer.length > 0 ? (
+            answer.map((value) => {
+              return <Answer info={value} />;
+            })
+          ) : (
+            <div />
+          )}
         </div>
       ) : (
         <></>
@@ -246,12 +305,15 @@ const Question: React.FC<QuestionProps> = ({questionInfo, updateReloadState}) =>
   );
 };
 
-interface MakeAnswerProps{
+interface MakeAnswerProps {
   question_id: string;
   updateReloadState: (newState: string) => void;
 }
 
-const MakeAnswer: React.FC<MakeAnswerProps> = ({updateReloadState, question_id}) => {
+const MakeAnswer: React.FC<MakeAnswerProps> = ({
+  updateReloadState,
+  question_id,
+}) => {
   let state = useSelector((state: RootState) => {
     return state;
   });
@@ -261,28 +323,30 @@ const MakeAnswer: React.FC<MakeAnswerProps> = ({updateReloadState, question_id})
 
   function onSubmitHandler(): void {
     console.log(id, content.current?.value, question_id);
-    axios.post("http://localhost:8000/room/answer", {
-      question_id: question_id,
-      ans_writer: id,
-      answer:  content.current?.value
-    }).then((res) => {
-      if(res.data){
+    axios
+      .post("http://localhost:8000/room/answer", {
+        question_id: question_id,
+        ans_writer: id,
+        answer: content.current?.value,
+      })
+      .then((res) => {
+        if (res.data) {
+          Swal.fire({
+            icon: "success",
+            title: "질문이 생성되었습니다",
+          }).then((swalRes) => {
+            if (swalRes.isConfirmed) {
+              updateReloadState("question_answer" + crypto.randomUUID());
+            }
+          });
+        }
+      })
+      .catch(() => {
         Swal.fire({
-          icon: "success",
-          title: "질문이 생성되었습니다",
-        }).then((swalRes) => {
-          if(swalRes.isConfirmed){
-            updateReloadState("question_answer"+crypto.randomUUID());
-          }
-        })
-      }
-    }).catch(() => {
-      Swal.fire({
-        icon: "error",
-        title: "질문 생성에 실패했습니다.",
+          icon: "error",
+          title: "질문 생성에 실패했습니다.",
+        });
       });
-    })
-
   }
 
   return (
@@ -323,16 +387,15 @@ const MakeAnswer: React.FC<MakeAnswerProps> = ({updateReloadState, question_id})
 };
 
 interface AnswerProps {
-  info:{
+  info: {
     ans_time: string;
     ans_writer: string;
-    answer : string;
-  }
-
+    answer: string;
+  };
 }
 
 // 답변 component
-const Answer: React.FC<AnswerProps> = ({info}) => {
+const Answer: React.FC<AnswerProps> = ({ info }) => {
   return (
     <StyledAnswer>
       <div
@@ -348,8 +411,12 @@ const Answer: React.FC<AnswerProps> = ({info}) => {
           margin: "0 10px",
         }}
       >
-        <p style={{ fontWeight: "600", color: `${theme.navy}` }}>{info.ans_writer}</p>
-        <p style={{ color: "gray", fontSize: "0.9em" }}>{new Date(info.ans_time).toDateString()}</p>
+        <p style={{ fontWeight: "600", color: `${theme.navy}` }}>
+          {info.ans_writer}
+        </p>
+        <p style={{ color: "gray", fontSize: "0.9em" }}>
+          {new Date(info.ans_time).toDateString()}
+        </p>
       </div>
       <p style={{ whiteSpace: "pre-wrap", padding: "0.5em 1.5em" }}>
         {info.answer}
