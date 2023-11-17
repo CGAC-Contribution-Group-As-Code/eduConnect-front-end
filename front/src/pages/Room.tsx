@@ -6,10 +6,9 @@ import theme from "../styles/theme";
 import { ClassHome } from "../components/ClassComponent/ClassHome";
 import { ClassGuide } from "../components/ClassComponent/ClassGuide";
 import { ClassQA } from "../components/ClassComponent/ClassQA";
-import { ClassQuiz } from "../components/ClassComponent/ClassQuiz";
+import { MyStudy } from "../components/ClassComponent/MyStudy";
 import { StdMng } from "../components/ClassComponent/ifTeacher/StdMng";
-import { QuizMng } from "../components/ClassComponent/ifTeacher/QuizMng";
-import { QAMng } from "../components/ClassComponent/ifTeacher/QAMng";
+
 import { useSelector } from "react-redux";
 
 interface RootState {
@@ -40,14 +39,12 @@ export const Room = () => {
         return <ClassGuide />;
       case 2: // Q&A
         return <ClassQA />;
-      case 3: // 학습자 관리
+      case 3:
+        return <MyStudy />;
+      case 4: // 학습자 관리
         return <StdMng />;
-      case 4: // 퀴즈 관리
-        return <QuizMng />;
-      case 5: // Q&A 관리
-        return <QAMng />;
-      case 6: // 공지사항 관리
-        return <QAMng />;
+      case 5: // 공지사항 관리
+        return <StdMng />;
     }
   };
 
@@ -68,12 +65,11 @@ export const Room = () => {
             <Styledp onClick={() => setPage(0)}>Home</Styledp>
             <Styledp onClick={() => setPage(1)}>Milestone</Styledp>
             <Styledp onClick={() => setPage(2)}>Q&A</Styledp>
+            <Styledp onClick={() => setPage(3)}>내 학습현황</Styledp>
             {role === 1 ? (
               <>
-                <Styledp onClick={() => setPage(3)}>학습자 관리</Styledp>
-                <Styledp onClick={() => setPage(4)}>Quiz 관리</Styledp>
-                <Styledp onClick={() => setPage(5)}>Q&A 관리</Styledp>
-                <Styledp onClick={() => setPage(6)}>공지사항 관리</Styledp>
+                <Styledp onClick={() => setPage(4)}>학습자 관리</Styledp>
+                <Styledp onClick={() => setPage(5)}>공지사항 관리</Styledp>
               </>
             ) : (
               <></>
