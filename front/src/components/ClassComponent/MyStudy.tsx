@@ -53,13 +53,14 @@ export const MyStudy = () => {
 
   const fetchData = async () => {
     const response = await axios.get<{ user: UserProps[]; ai: AiProps[] }>(
-      "http://localhost:8000/api"
+      "http://localhost:8000/user/feedback/user",
+      { params: { user_id: id } }
     );
     return new DataCollection(response.data.user, response.data.ai);
   };
 
   const { data, isLoading, isError } = useQuery<DataCollection, Error>(
-    "dataCollection",
+    ["dataCollection", id],
     fetchData
   );
 
