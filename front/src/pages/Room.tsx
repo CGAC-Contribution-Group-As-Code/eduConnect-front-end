@@ -65,7 +65,12 @@ export const Room = () => {
             <Styledp onClick={() => setPage(0)}>Home</Styledp>
             <Styledp onClick={() => setPage(1)}>Milestone</Styledp>
             <Styledp onClick={() => setPage(2)}>Q&A</Styledp>
-            <Styledp onClick={() => setPage(3)}>내 학습현황</Styledp>
+            {role === 0 ? (
+              <Styledp onClick={() => setPage(3)}>Feedback</Styledp>
+            ) : (
+              <></>
+            )}
+
             {role === 1 ? (
               <>
                 <Styledp onClick={() => setPage(4)}>학습자 관리</Styledp>
