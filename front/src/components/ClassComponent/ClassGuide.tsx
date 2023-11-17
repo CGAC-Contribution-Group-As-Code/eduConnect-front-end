@@ -1,6 +1,6 @@
 import React, { useState, useRef, DragEvent } from "react";
 import styled from "styled-components";
-import theme from "../styles/theme";
+import theme from "../../styles/theme";
 import { GoMilestone } from "react-icons/go";
 import { AiOutlinePlusCircle, AiOutlineCloseCircle } from "react-icons/ai";
 import TextField from "@mui/material/TextField";
@@ -14,6 +14,10 @@ import { GuideContent } from "./GuideContent";
 export const ClassGuide = () => {
   const [make, setMake] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<number>(0);
+
+  const onCloseHandler = () => {
+    setIsOpen(0);
+  };
 
   const openHandler = (id: number) => {
     setIsOpen(id);
@@ -69,7 +73,7 @@ export const ClassGuide = () => {
         </>
       ) : (
         <>
-          <GuideContent id={isOpen} />
+          <GuideContent id={isOpen} onCloseHandler={onCloseHandler} />
         </>
       )}
     </StyledContainer>

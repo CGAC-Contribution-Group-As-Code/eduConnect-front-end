@@ -3,11 +3,13 @@ import styled from "styled-components";
 import StyledDiv from "../styles/StyledDiv";
 import StyledWrapper from "../styles/StyledWrapper";
 import theme from "../styles/theme";
-import { ClassHome } from "../components/ClassHome";
-import { ClassGuide } from "../components/ClassGuide";
-import { ClassQA } from "../components/ClassQA";
-import { ClassQuiz } from "../components/ClassQuiz";
-import { ClassStdMng } from "../components/ClassStdMng";
+import { ClassHome } from "../components/ClassComponent/ClassHome";
+import { ClassGuide } from "../components/ClassComponent/ClassGuide";
+import { ClassQA } from "../components/ClassComponent/ClassQA";
+import { ClassQuiz } from "../components/ClassComponent/ClassQuiz";
+import { StdMng } from "../components/ClassComponent/ifTeacher/StdMng";
+import { QuizMng } from "../components/ClassComponent/ifTeacher/QuizMng";
+import { QAMng } from "../components/ClassComponent/ifTeacher/QAMng";
 
 export const Room = () => {
   const path = decodeURI(window.location.pathname).split("/");
@@ -27,7 +29,11 @@ export const Room = () => {
       case 2: // Q&A
         return <ClassQA />;
       case 3: // 학습자 관리
-        return <ClassStdMng />;
+        return <StdMng />;
+      case 4: // 퀴즈 관리
+        return <QuizMng />;
+      case 5: // Q&A 관리
+        return <QAMng />;
     }
   };
 
@@ -49,6 +55,8 @@ export const Room = () => {
             <Styledp onClick={() => setPage(1)}>Milestone</Styledp>
             <Styledp onClick={() => setPage(2)}>Q&A</Styledp>
             <Styledp onClick={() => setPage(3)}>학습자 관리</Styledp>
+            <Styledp onClick={() => setPage(4)}>Quiz 관리</Styledp>
+            <Styledp onClick={() => setPage(5)}>Q&A 관리</Styledp>
           </StyledMenu>
           <StyledContent>
             <p
