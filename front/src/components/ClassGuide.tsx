@@ -9,52 +9,68 @@ import { QueryClient, useQuery } from "react-query";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { UseMutationResult, useMutation, useQueryClient } from "react-query";
+import { GuideContent } from "./GuideContent";
 
 export const ClassGuide = () => {
   const [make, setMake] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<number>(0);
+
+  const openHandler = (id: number) => {
+    setIsOpen(id);
+  };
 
   return (
     <StyledContainer>
-      <div
-        style={{
-          display: "flex",
-          flexFlow: "row nowrap",
-          width: "100%",
-          justifyContent: "space-between",
-        }}
-      >
-        <StyledRow>
-          <GoMilestone size={22} color={theme.navy} />
-          <p style={{ fontWeight: "600", color: `${theme.navy}` }}>Milestone</p>
-        </StyledRow>
-
-        {make === false ? (
-          <StyledRow
-            style={{ cursor: "pointer" }}
-            onClick={() => setMake(true)}
+      {isOpen === 0 ? (
+        <>
+          <div
+            style={{
+              display: "flex",
+              flexFlow: "row nowrap",
+              width: "100%",
+              justifyContent: "space-between",
+            }}
           >
-            <p>이정표 생성하기</p>
-            <AiOutlinePlusCircle size={20} color={theme.navy} />
-          </StyledRow>
-        ) : (
-          <StyledRow
-            style={{ cursor: "pointer" }}
-            onClick={() => setMake(false)}
-          >
-            <p>닫기</p>
-            <AiOutlineCloseCircle size={20} color="red" />
-          </StyledRow>
-        )}
-      </div>
+            <StyledRow>
+              <GoMilestone size={22} color={theme.navy} />
+              <p style={{ fontWeight: "600", color: `${theme.navy}` }}>
+                Milestone
+              </p>
+            </StyledRow>
 
-      {make === false ? (
-        <StyledDiv>
-          <Milestone />
-          <Milestone />
-          <Milestone />
-        </StyledDiv>
+            {make === false ? (
+              <StyledRow
+                style={{ cursor: "pointer" }}
+                onClick={() => setMake(true)}
+              >
+                <p>이정표 생성하기</p>
+                <AiOutlinePlusCircle size={20} color={theme.navy} />
+              </StyledRow>
+            ) : (
+              <StyledRow
+                style={{ cursor: "pointer" }}
+                onClick={() => setMake(false)}
+              >
+                <p>닫기</p>
+                <AiOutlineCloseCircle size={20} color="red" />
+              </StyledRow>
+            )}
+          </div>
+
+          {make === false ? (
+            <StyledDiv>
+              <Milestone openHandler={openHandler} />
+              <Milestone openHandler={openHandler} />
+              <Milestone openHandler={openHandler} />
+            </StyledDiv>
+          ) : (
+            <CreateMilestone setMake={() => setMake(false)}></CreateMilestone>
+          )}
+        </>
       ) : (
-        <CreateMilestone setMake={() => setMake(false)}></CreateMilestone>
+        <>
+          <GuideContent id={isOpen} />
+        </>
       )}
     </StyledContainer>
   );
@@ -62,9 +78,13 @@ export const ClassGuide = () => {
 
 // 각 이정표
 
-const Milestone = () => {
+type Props = {
+  openHandler: (id: number) => void;
+};
+
+const Milestone = ({ openHandler }: Props) => {
   return (
-    <StyledBox>
+    <StyledBox onClick={() => openHandler(1)}>
       <p style={{ fontWeight: "600" }}>이차방정식과 함수</p>
       <p style={{ fontSize: "0.9em", color: "gray", textAlign: "end" }}>
         2023.11.15
