@@ -16,6 +16,7 @@ interface MileStone {
   name: string;
   desc: string;
   last_modify: string;
+
 }
 
 export const ClassGuide = () => {
@@ -111,8 +112,6 @@ type Props = {
 };
 
 const Milestone = ({ openHandler, milestone_data }: Props) => {
-  console.log(milestone_data);
-
   if (milestone_data !== undefined) {
     return (
       <>
@@ -189,7 +188,6 @@ const CreateMilestone = ({ setMake }: Offprops) => {
 
   const { mutate, isLoading } = useMutation(CreateMile, {
     onSuccess: (data) => {
-      console.log(data);
       Swal.fire({
         icon: "success",
         title: "${data.name} 이정표가 생성되었습니다",

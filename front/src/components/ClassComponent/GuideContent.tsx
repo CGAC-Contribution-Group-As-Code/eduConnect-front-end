@@ -24,11 +24,35 @@ interface RootState {
   };
 }
 
+interface Quiz {
+  type: string;
+  answer: string;
+  title: string;
+  desc: string;
+  etc: string[];
+}
+
+interface Round {
+  r_id: string;
+  quiz: Quiz[];
+}
+
+interface Content{
+  name: string;
+  path: string;
+  size: number;
+  roundes: Round[];
+}
 interface MileStone {
   _id: string;
   name: string;
   desc: string;
   last_modify: string;
+  contents: Content[];
+}
+
+interface ContentProps{
+  contents: Content[];
 }
 
 export const GuideContent = ({ mile_id, onCloseHandler }: Props) => {
@@ -71,6 +95,7 @@ export const GuideContent = ({ mile_id, onCloseHandler }: Props) => {
       alert("파일을 선택해주세요.");
     }
   };
+
   const room_id = decodeURI(window.location.pathname).split("/").at(-2);
   const {
     data: milestone_data,
@@ -180,7 +205,15 @@ export const GuideContent = ({ mile_id, onCloseHandler }: Props) => {
         )}
       </div>
 
-      {isQuiz ? <ClassQuiz /> : <Lecture mile_id={mile_id} />}
+      {isQuiz ? (
+        milestone_data?.contents ? (
+          <ClassQuiz contents={milestone_data?.contents} />
+        ) : (
+          <p>No tasks available</p>
+        )
+      ) : (
+        <Lecture mile_id={mile_id} />
+      )}
     </StyledDiv>
   );
 };

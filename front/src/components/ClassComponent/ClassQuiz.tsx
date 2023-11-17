@@ -18,42 +18,46 @@ import TextField from "@mui/material/TextField";
 import axios from "axios";
 import { useQuery } from "react-query";
 
-interface RoundType {
-  round_id: string[];
-}
-
-class TaskType {
-  type: number;
-  answer: string;
-  title: string;
-  desc: string;
-  etc: string[];
-
-  constructor(
-    type: number,
-    answer: string,
-    title: string,
-    desc: string,
-    etc: string[]
-  ) {
-    this.type = type;
-    this.answer = answer;
-    this.title = title;
-    this.desc = desc;
-    this.etc = etc;
-  }
-}
-
-interface RoundProps {
-  roundNum: number;
-  roundClear: boolean;
-  taskData: TaskType[];
-}
 interface RootState {
   user: {
     id: string;
     role: number;
   };
+}
+interface Quiz {
+  type: string;
+  answer: string;
+  title: string;
+  desc: string;
+  etc: string[];
+}
+
+interface RoundProps {
+  roundNum: number;
+  quiz: Quiz[];
+}
+
+interface Round {
+  r_id: string;
+  quiz: Quiz[];
+}
+
+interface Content {
+  name: string;
+  path: string;
+  size: number;
+  roundes: Round[];
+}
+interface MileStone {
+  _id: string;
+  name: string;
+  desc: string;
+  last_modify: string;
+  contents: Content[];
+}
+
+interface ContentProps {
+  contents: Content[];
 }
 
 interface ObjProps {
@@ -74,7 +78,7 @@ interface SubProps {
   myAnswer: string; // 내가 작성했던 답
 }
 
-export const ClassQuiz = () => {
+export const ClassQuiz: React.FC<ContentProps> = ({ contents }) => {
   // 제일 윗단 컴포넌트
   const dispatch = useDispatch();
   let state = useSelector((state: RootState) => {
@@ -83,50 +87,38 @@ export const ClassQuiz = () => {
   const { user } = state;
   const { id, role } = user;
 
-  const exampleTaskData: TaskType[] = [
-    {
-      type: 0,
-      answer: "answer1",
-      title: "Question 1",
-      desc: "Description for question 1",
-      etc: ["task1", "task2", "task3", "task4"],
-    },
-    {
-      type: 1,
-      answer: "answer2",
-      title: "Question 2",
-      desc: "Description for question 2",
-      etc: [""],
-    },
-  ];
-
   return (
-    <div
-      style={{
-        display: "flex",
-        flexFlow: "column nowrap",
-        gap: "10px",
-        marginTop: "10px",
-      }}
-    >
-      <Round roundNum={1} roundClear={false} taskData={exampleTaskData} />
-      <Round roundNum={2} roundClear={false} taskData={exampleTaskData} />
-    </div>
+    <>
+      {contents.map((value) => {
+        return (
+          <div
+            style={{
+              display: "flex",
+              flexFlow: "column nowrap",
+              gap: "10px",
+              marginTop: "10px",
+            }}
+          >
+            <>
+              {value.roundes.map((item, idx) => {
+                return <Round roundNum={idx+1} quiz={item.quiz} key={idx} />;
+              })}
+            </>
+          </div>
+        );
+      })}
+    </>
   );
 };
 
-const Round = ({ roundNum, roundClear, taskData }: RoundProps) => {
+const Round = ({ roundNum, quiz }: RoundProps) => {
   const [num, setNum] = useState<number>(roundNum); // 각 회차 번호 state
-  const [isEnded, setIsEnded] = React.useState<boolean>(roundClear); // 각 회차자 끝났는지 여부
-  const [resultData, setResultData] = React.useState(taskData); // 각 회차 결과가 담길 배열
+  const [resultData, setResultData] = React.useState(quiz); // 각 회차 결과가 담길 배열
 
   useEffect(() => {
     setNum(roundNum);
-    setIsEnded(roundClear);
-    setResultData(taskData);
-  }, [roundNum, roundClear, taskData]);
-
-  console.log(num);
+    setResultData(quiz);
+  }, [roundNum, quiz]);
 
   const postResult = () => {
     //axios.post
@@ -142,7 +134,7 @@ const Round = ({ roundNum, roundClear, taskData }: RoundProps) => {
 
       {resultData.map((task, index) => (
         <div key={index}>
-          {task.type === 0 ? (
+          {task.type === "0" ? (
             <Objective
               num={index + 1}
               title={task.title}
@@ -201,8 +193,8 @@ const Objective = ({
         scoring === -1
           ? { backgroundColor: "#fad0d0" }
           : scoring === 1
-          ? { backgroundColor: "aliceblue" }
-          : { backgroundColor: "transparent" }
+            ? { backgroundColor: "aliceblue" }
+            : { backgroundColor: "transparent" }
       }
     >
       <div
@@ -321,8 +313,8 @@ const Subjective = ({ num, title, desc, isCorrect, myAnswer }: SubProps) => {
         scoring === -1
           ? { backgroundColor: "#fad0d0" }
           : scoring === 1
-          ? { backgroundColor: "aliceblue" }
-          : { backgroundColor: "transparent" }
+            ? { backgroundColor: "aliceblue" }
+            : { backgroundColor: "transparent" }
       }
     >
       <div
