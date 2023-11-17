@@ -9,21 +9,23 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
 import axios from "axios";
+import { HiUserMinus } from "react-icons/hi2";
 
 export const MakeClass = () => {
   const navigate = useNavigate();
   const name = useRef<HTMLInputElement>(null);
+  const roomDesc = useRef<HTMLInputElement>(null);
 
-  const make = () => {
-    Swal.fire({
-      icon: "success",
-      title: `${name.current!.value} 개설 성공했습니다!`,
-    }).then((res) => {
-      if (res.isConfirmed) {
-        navigate("/");
-      }
-    });
-  };
+  // const make = () => {
+  //   Swal.fire({
+  //     icon: "success",
+  //     title: `${name.current!.value} 개설 성공했습니다!`,
+  //   }).then((res) => {
+  //     if (res.isConfirmed) {
+  //       navigate("/");
+  //     }
+  //   });
+  // };
 
   return (
     <StyledWrapper>
@@ -39,45 +41,43 @@ export const MakeClass = () => {
           inputRef={name}
         />
 
-        <StyledGrid>
-          <StyledBox>
-            <StyledText style={{ color: `${theme.navy}` }}>
-              전체 학습자 리스트
-            </StyledText>
+        <TextField
+          id="outlined-multiline-static"
+          multiline
+          rows={4}
+          color="primary"
+          label="간단한 설명"
+          style={{ width: "80%", fontFamily: "HealthsetGothicLight" }}
+          inputRef={roomDesc}
+        />
 
-            <Student />
-          </StyledBox>
-
-          <StyledBox>
-            <StyledText style={{ color: `${theme.skyblue}` }}>
-              추가된 학습자 리스트
-            </StyledText>
-          </StyledBox>
-        </StyledGrid>
-
-        <Styledh2
-          id="submit_btn"
-          style={{
-            fontSize: "1em",
-            alignSelf: "end",
-            cursor: "pointer",
-            width: "fit-content",
-          }}
-          onClick={() => make()}
-        >
-          개설하기!
-        </Styledh2>
+        <CreateRoom nameRef={name} roomDescRef={roomDesc} />
       </StyledDiv>
     </StyledWrapper>
   );
 };
 
-const Student = () => {
+interface ChildProps {
+  nameRef: React.MutableRefObject<HTMLInputElement | null>;
+  roomDescRef: React.MutableRefObject<HTMLInputElement | null>;
+}
+
+const CreateRoom: React.FC<ChildProps> = ({ nameRef, roomDescRef }) => {
+  const nameValue = nameRef.current?.value;
+  const roomDescValue = roomDescRef.current?.value;
+
   interface User {
     _id: string;
     user_id: string;
     teacher: string;
   }
+
+  interface AddStd {
+    _id: string;
+    user_id: string;
+  }
+
+  const [std, setStd] = useState<AddStd[]>([]);
 
   const {
     data: users,
@@ -86,49 +86,114 @@ const Student = () => {
   } = useQuery<User[], Error>({
     queryKey: "users",
     queryFn: async () => {
-      const response = await axios.get<User[]>(
-        "http://localhost:8000/all-user"
-      );
+      const response = await axios.get<User[]>("http://localhost:8000/user");
       return response.data;
     },
   });
 
-  const add = (id: string) => {
-    Swal.fire({
-      icon: "success",
-      title: `${id}님을 강의에 추가했습니다.`,
-    });
-  };
-
   if (isLoading) {
     return <span>Loading...</span>;
   }
-
   if (isError) {
     return <span>Error</span>;
   }
 
-  if (users) {
-    return (
-      <>
-        {users.map((user) => (
-          <StyledItem id="addMem" key={user._id}>
-            {" "}
-            {/* Add key attribute */}
-            <p style={{ fontWeight: "600" }}>{user.user_id}</p>
-            <AiOutlinePlusCircle
-              style={{ cursor: "pointer" }}
-              size={20}
-              color="gray"
-              onClick={() => add(user.user_id)}
-            />
-          </StyledItem>
-        ))}
-      </>
-    );
+  const add = (user_id: string, _id: string) => {
+    setStd([...std, { _id, user_id }]);
+    Swal.fire({
+      icon: "success",
+      title: `${user_id}님을 강의에 추가했습니다.`,
+    });
+  };
+
+  function deleteStd(_id: string, user_id: string): void {
+    Swal.fire({
+      icon: "success",
+      title: `id : ${user_id}님을 스터디에서 제거하였습니다.`,
+    });
+
+    setStd(std.filter((user) => user._id !== _id));
   }
 
-  return null;
+  function createRoom(): void {
+    axios.post("http://localhost:8000/room", {
+      name: nameValue,
+      desc: roomDescValue,
+      student: std,
+    });
+  }
+
+  return (
+    <>
+      <StyledGrid>
+        <StyledBox>
+          <StyledText style={{ color: `${theme.navy}` }}>
+            전체 학습자 리스트
+          </StyledText>
+
+          {users ? (
+            users.map((user) =>
+              user.teacher === "0" ? (
+                <StyledItem id="addMem" key={user._id + "!"}>
+                  {" "}
+                  {/* Add key attribute */}
+                  <p style={{ fontWeight: "600" }}>{user.user_id}</p>
+                  <AiOutlinePlusCircle
+                    style={{ cursor: "pointer" }}
+                    size={20}
+                    color="gray"
+                    onClick={() => add(user.user_id, user._id)}
+                  />
+                </StyledItem>
+              ) : (
+                <></>
+              )
+            )
+          ) : (
+            <></>
+          )}
+        </StyledBox>
+
+        <StyledBox>
+          <StyledText style={{ color: `${theme.skyblue}` }}>
+            추가된 학습자 리스트
+          </StyledText>
+
+          {std && std instanceof Array ? (
+            std.map((user) => (
+              <StyledItem id="addMem" key={user._id + "?"}>
+                {/* Add key attribute */}
+                <p style={{ fontWeight: "600" }}>{user.user_id}</p>
+                <p>
+                  <HiUserMinus
+                    size={20}
+                    style={{ cursor: "pointer" }}
+                    color="brown"
+                    onClick={() => deleteStd(user._id, user.user_id)}
+                  />
+                </p>
+              </StyledItem>
+            ))
+          ) : (
+            <></>
+          )}
+        </StyledBox>
+      </StyledGrid>
+
+      <Styledh2
+        id="submit_btn"
+        style={{
+          fontSize: "1em",
+          alignSelf: "end",
+          cursor: "pointer",
+          width: "fit-content",
+        }}
+        onClick={() => createRoom()}
+      >
+        개설하기!
+      </Styledh2>
+    </>
+  );
 };
 
 const StyledItem = styled.div`
