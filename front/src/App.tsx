@@ -12,8 +12,8 @@ function App() {
     <>
       <Header />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Login />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/make" element={<MakeClass />} />
         <Route path="/class/:id/:name" element={<Room />} />
       </Routes>
