@@ -4,11 +4,11 @@ import theme from "../styles/theme";
 import { GoMilestone } from "react-icons/go";
 import { AiOutlinePlusCircle, AiOutlineCloseCircle } from "react-icons/ai";
 import TextField from "@mui/material/TextField";
-import { CloudArrowUpIcon } from "@heroicons/react/24/outline";
 import { FiUploadCloud } from "react-icons/fi";
-import { useQuery } from "react-query";
+import { QueryClient, useQuery } from "react-query";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { UseMutationResult, useMutation, useQueryClient } from "react-query";
 
 export const ClassGuide = () => {
   const [make, setMake] = useState<boolean>(false);
@@ -79,9 +79,19 @@ interface Offprops {
   setMake: (e: boolean) => void;
 }
 
+interface MakeMilestone {
+  name: string;
+  desc: string;
+  filename1: string;
+  filename2: string;
+  file: Promise<FormData | undefined>;
+}
+
 const CreateMilestone = ({ setMake }: Offprops) => {
   const mileName = useRef<HTMLInputElement>(null);
-  const desc = useRef<HTMLInputElement>(null);
+  const descName = useRef<HTMLInputElement>(null);
+  const fN1 = useRef<HTMLInputElement>(null);
+  const fN2 = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File[]>([]);
 
   const fileUploadValidHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,17 +115,7 @@ const CreateMilestone = ({ setMake }: Offprops) => {
           formData.append("file", file[i]); // 파일 배열에 있는 파일들을 순서대로 업로드
         }
 
-        // // Axios를 이용해서 Back-End로 파일 업로드 요청!
-        // // !!중요2. header에 content-type에 multipart/form-data를 설정!!
-        // const axiosResponse = await axiosDefaultInstance.post<ApiResponse<FileUploadResponse>>("/files", formData, {"headers" : {"content-type" : "multipart/form-data"}})
-
-        // // HttpStatus가 200번호 구역이 아니거나
-        // // 서버에서 응답 코드로 0(성공)을 주지 않았을 경우
-        // if(axiosResponse.status < 200 || axiosResponse.status >= 300 || axiosResponse.data.resultCode !== 0){
-        //   // Error를 발생시켜 Catch문을 타게 만들어주는데, 서버에 응답받은 메시지를 넣어준다!
-        //   // 서버에서 응답 메시지를 받지 못했을경우 기본 메시지 설정또한 함께 해준다
-        //   throw Error(axiosResponse.data.message || "문제가 발생했어요!");
-        // }
+        return formData;
       } catch (e) {
         Swal.fire({
           icon: "error",
@@ -125,21 +125,50 @@ const CreateMilestone = ({ setMake }: Offprops) => {
     }
   };
 
-  const makeMilestone = () => {
-    fileUploadHandler();
-    console.log(file);
-    if (mileName.current) {
-      let name = mileName.current!.value;
+  const CreateMile = async (data: MakeMilestone) => {
+    const { data: response } = await axios.post(``, data);
+    return response.data;
+  };
 
+  const queryClient = useQueryClient();
+
+  const { mutate, isLoading } = useMutation(CreateMile, {
+    onSuccess: (data) => {
+      console.log(data);
       Swal.fire({
         icon: "success",
-        title: `${name} 생성 완료`,
-      }).then((res) => {
-        if (res.isConfirmed) {
-          setMake(false);
-        }
+        title: "${data.name} 이정표가 생성되었습니다",
       });
-    }
+    },
+    onError: () => {
+      console.log("error");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries("create");
+    },
+  });
+
+  const onSubmit = () => {
+    let nameMile = mileName.current!.value;
+    let descMile = mileName.current!.value;
+    let fileN1 = fN1.current!.value;
+    let fileN2 = fN2.current!.value;
+
+    var arr = fileUploadHandler();
+
+    var data = {
+      name: nameMile,
+      desc: descMile,
+      filename1: fileN1,
+      filename2: fileN2,
+      file: arr,
+    };
+
+    const milestone = {
+      ...data,
+    };
+    mutate(milestone);
+    setMake(false);
   };
 
   return (
@@ -160,7 +189,7 @@ const CreateMilestone = ({ setMake }: Offprops) => {
         color="primary"
         label="간단한 설명"
         style={{ width: "80%", fontFamily: "HealthsetGothicLight" }}
-        inputRef={desc}
+        inputRef={descName}
       />
 
       <hr />
@@ -173,6 +202,7 @@ const CreateMilestone = ({ setMake }: Offprops) => {
           label="강의 자료명"
           variant="outlined"
           style={{ width: "40%" }}
+          inputRef={fN1}
         />
         <input
           type="file"
@@ -187,6 +217,7 @@ const CreateMilestone = ({ setMake }: Offprops) => {
           label="강의 자료명"
           variant="outlined"
           style={{ width: "40%" }}
+          inputRef={fN2}
         />
         <input
           type="file"
@@ -203,7 +234,7 @@ const CreateMilestone = ({ setMake }: Offprops) => {
           cursor: "pointer",
         }}
         id="makeMilestone"
-        onClick={() => makeMilestone()}
+        onClick={() => onSubmit()}
       >
         생성하기!
       </p>
