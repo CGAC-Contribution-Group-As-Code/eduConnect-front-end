@@ -33,15 +33,17 @@ class FeedbackCollection {
 }
 
 export const StdMng = () => {
+  const room_id = decodeURI(window.location.pathname).split("/").at(-2);
   const fetchData = async () => {
     const response = await axios.get<EachProps[]>(
-      "http://localhost:8000/feedback"
+      "http://localhost:8000/user/feedback",
+      { params: { room_id: room_id } }
     );
     return response.data;
   };
 
   const { data, isLoading, isError } = useQuery<EachProps[], Error>(
-    "feedbackData",
+    ["feedbackData", room_id],
     fetchData
   );
 
