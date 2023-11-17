@@ -38,7 +38,7 @@ export const GuideContent = ({ mile_id, onCloseHandler }: Props) => {
   const { user } = state;
   const { id, role } = user;
 
-  const [isQuiz, setIsQuiz] = useState<boolean>(true);
+  const [isQuiz, setIsQuiz] = useState<boolean>(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -130,20 +130,6 @@ export const GuideContent = ({ mile_id, onCloseHandler }: Props) => {
       >
         <StyledRow>
           <StyledP
-            onClick={() => setIsQuiz(true)}
-            style={
-              isQuiz
-                ? {
-                    color: `${theme.skyblue}`,
-                    fontWeight: "600",
-                    fontSize: "1.2em",
-                  }
-                : { color: "gray" }
-            }
-          >
-            Quiz
-          </StyledP>
-          <StyledP
             onClick={() => setIsQuiz(false)}
             style={
               isQuiz === false
@@ -156,6 +142,20 @@ export const GuideContent = ({ mile_id, onCloseHandler }: Props) => {
             }
           >
             강의 자료
+          </StyledP>
+          <StyledP
+            onClick={() => setIsQuiz(true)}
+            style={
+              isQuiz
+                ? {
+                    color: `${theme.skyblue}`,
+                    fontWeight: "600",
+                    fontSize: "1.2em",
+                  }
+                : { color: "gray" }
+            }
+          >
+            Quiz
           </StyledP>
         </StyledRow>
 
