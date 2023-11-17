@@ -113,7 +113,7 @@ type Props = {
 const Milestone = ({ openHandler, milestone_data }: Props) => {
   console.log(milestone_data);
 
-  if (milestone_data !== undefined || milestone_data!.length > 0) {
+  if (milestone_data !== undefined) {
     return (
       <>
         {milestone_data!.map((milestone) => {

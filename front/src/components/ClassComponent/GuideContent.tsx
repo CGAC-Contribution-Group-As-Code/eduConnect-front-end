@@ -238,8 +238,7 @@ const Lecture = ({ mile_id }: TypeProps) => {
   const openPDFHandler = (contentPath: string) => {
     const a = document.createElement("a");
     const path = contentPath.split("/");
-    a.href =
-      `http://localhost:8000/milestone/${path[0]}/content/${path[1]}`;
+    a.href = `http://localhost:8000/milestone/${path[0]}/content/${path[1]}`;
     a.target = "_blank";
     document.body.appendChild(a);
     a.click();
