@@ -8,9 +8,57 @@ import { MdOutlineQuestionAnswer } from "react-icons/md";
 import { IoCloseCircleOutline, IoSchoolSharp } from "react-icons/io5";
 import TextField from "@mui/material/TextField";
 import { TbMessageCircleQuestion } from "react-icons/tb";
+import { useQuery } from "react-query";
+import axios from "axios";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router";
+
+
+interface QuestionInfo{
+    _id: string
+    writer: string
+    time: string,
+    desc: string,
+    answer: []
+}
+
+interface RootState {
+  user: {
+    id: string;
+    role: number;
+  };
+}
+
 
 export const ClassQA = () => {
+  const room_id = decodeURI(window.location.pathname).split("/").at(-2);
   const [openQuestion, setOpenQuestion] = useState<boolean>(false);
+  const [reload, setReload] = useState<string>("question");
+
+  const {
+    data: question,
+    isLoading,
+    isError,
+  } = useQuery<QuestionInfo[], Error>({
+    queryKey: reload,
+    queryFn: async () => {
+      const response = await axios.get<QuestionInfo[]>(`http://localhost:8000/room/${room_id}/questions`);
+      return response.data;
+    },
+  });
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  if (isError) {
+    return <span>Error</span>;
+  }
+
+  const updateReloadState = (newState: string) => {
+    setReload(newState);
+    setOpenQuestion(false);
+  };
 
   return (
     <div
@@ -32,18 +80,57 @@ export const ClassQA = () => {
         </StyledRow>
       )}
 
-      {openQuestion ? <MakeQuestion /> : <></>}
+      {openQuestion ? <MakeQuestion updateReloadState={updateReloadState}/> : <></>}
 
       <StyledCon>
-        <Question />
-        <Question />
+        {
+          question && question.length > 0 ?  question.map((questionInfo) => {
+            return <Question updateReloadState={updateReloadState} questionInfo={questionInfo} key={questionInfo.time}/>
+          }) : <></>
+        }
       </StyledCon>
     </div>
   );
 };
 
-const MakeQuestion = () => {
+interface MakeQuestionProps {
+  updateReloadState: (newState: string) => void; // 부모로부터 전달된 콜백 함수의 타입
+}
+
+const MakeQuestion: React.FC<MakeQuestionProps> = ({ updateReloadState }) => {
+  let state = useSelector((state: RootState) => {
+    return state;
+  });
+  const { user } = state;
+  const { id, role } = user;
   const content = useRef<HTMLInputElement>(null);
+  const room_id = decodeURI(window.location.pathname).split("/").at(-2);
+
+  function onSubmitHandler(): void {
+    console.log(id, content.current?.value)
+
+    axios.post("http://localhost:8000/room/questions", {
+      room_id: room_id,
+      writer: id,
+      desc:  content.current?.value
+    }).then((res) => {
+      if(res.data){
+        Swal.fire({
+          icon: "success",
+          title: "질문이 생성되었습니다",
+        }).then((swalRes) => {
+          if(swalRes.isConfirmed){
+            updateReloadState("question"+crypto.randomUUID());
+          }
+        })
+      }
+    }).catch(() => {
+      Swal.fire({
+        icon: "error",
+        title: "질문 생성에 실패했습니다.",
+      });
+    })
+  }
 
   return (
     <div
@@ -73,19 +160,25 @@ const MakeQuestion = () => {
           alignItems: "center",
           cursor: "pointer",
         }}
+        onClick={() => onSubmitHandler()}
       >
         <TbMessageCircleQuestion color={theme.navy} size={25} />
-        <StyledP>질문 등록</StyledP>
+        <StyledP >질문 등록</StyledP>
       </div>
     </div>
   );
 };
 
-// 질문 component
+interface QuestionProps {
+  questionInfo: QuestionInfo;
+  updateReloadState: (newState: string) => void;
+}
 
-const Question = () => {
+// 질문 component
+const Question: React.FC<QuestionProps> = ({questionInfo, updateReloadState}) => {
   const [openAnswer, setOpenAnswer] = useState<boolean>(false);
   const [makeAnswer, setMakeAnswer] = useState<boolean>(false);
+  const answer = questionInfo.answer;
 
   return (
     <StyledQuestion>
@@ -95,8 +188,8 @@ const Question = () => {
         title="클릭해 답변 보기"
       >
         <StyledTextheader>
-          <p>작성자</p>
-          <p>2023.11.17</p>
+          <p>{questionInfo.writer}</p>
+          <p>{new Date(questionInfo.time).toDateString()}</p>
         </StyledTextheader>
 
         <p
@@ -107,7 +200,7 @@ const Question = () => {
           }}
         >
           {" "}
-          질문 내용
+          {questionInfo.desc}
         </p>
       </div>
 
@@ -137,10 +230,14 @@ const Question = () => {
             </StyledRow2>
           </div>
 
-          {makeAnswer ? <MakeAnswer /> : <></>}
+          {makeAnswer ? <MakeAnswer updateReloadState={updateReloadState} question_id={questionInfo._id}/> : <></>}
 
-          <Answer />
-          <Answer />
+          {
+            answer && answer.length > 0 ? answer.map((value) => {
+              return <Answer info={value} />
+            }) : <div/>
+          }
+
         </div>
       ) : (
         <></>
@@ -149,8 +246,44 @@ const Question = () => {
   );
 };
 
-const MakeAnswer = () => {
+interface MakeAnswerProps{
+  question_id: string;
+  updateReloadState: (newState: string) => void;
+}
+
+const MakeAnswer: React.FC<MakeAnswerProps> = ({updateReloadState, question_id}) => {
+  let state = useSelector((state: RootState) => {
+    return state;
+  });
+  const { user } = state;
+  const { id, role } = user;
   const content = useRef<HTMLInputElement>(null);
+
+  function onSubmitHandler(): void {
+    console.log(id, content.current?.value, question_id);
+    axios.post("http://localhost:8000/room/answer", {
+      question_id: question_id,
+      ans_writer: id,
+      answer:  content.current?.value
+    }).then((res) => {
+      if(res.data){
+        Swal.fire({
+          icon: "success",
+          title: "질문이 생성되었습니다",
+        }).then((swalRes) => {
+          if(swalRes.isConfirmed){
+            updateReloadState("question_answer"+crypto.randomUUID());
+          }
+        })
+      }
+    }).catch(() => {
+      Swal.fire({
+        icon: "error",
+        title: "질문 생성에 실패했습니다.",
+      });
+    })
+
+  }
 
   return (
     <div
@@ -180,6 +313,7 @@ const MakeAnswer = () => {
           alignItems: "center",
           cursor: "pointer",
         }}
+        onClick={() => onSubmitHandler()}
       >
         <IoSchoolSharp color={theme.navy} size={25} />
         <StyledP>답변 등록</StyledP>
@@ -188,9 +322,17 @@ const MakeAnswer = () => {
   );
 };
 
-// 답변 component
+interface AnswerProps {
+  info:{
+    ans_time: string;
+    ans_writer: string;
+    answer : string;
+  }
 
-const Answer = () => {
+}
+
+// 답변 component
+const Answer: React.FC<AnswerProps> = ({info}) => {
   return (
     <StyledAnswer>
       <div
@@ -206,11 +348,11 @@ const Answer = () => {
           margin: "0 10px",
         }}
       >
-        <p style={{ fontWeight: "600", color: `${theme.navy}` }}>작성자 ID</p>
-        <p style={{ color: "gray", fontSize: "0.9em" }}>2023.11.17</p>
+        <p style={{ fontWeight: "600", color: `${theme.navy}` }}>{info.ans_writer}</p>
+        <p style={{ color: "gray", fontSize: "0.9em" }}>{new Date(info.ans_time).toDateString()}</p>
       </div>
       <p style={{ whiteSpace: "pre-wrap", padding: "0.5em 1.5em" }}>
-        답변 내용
+        {info.answer}
       </p>
     </StyledAnswer>
   );
