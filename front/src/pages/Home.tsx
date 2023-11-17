@@ -24,8 +24,6 @@ export const Home = () => {
   const { user } = state;
   const { id, role } = user;
 
-  console.log(id, role);
-
   return (
     <StyledWrapper>
       <StyledDiv>
