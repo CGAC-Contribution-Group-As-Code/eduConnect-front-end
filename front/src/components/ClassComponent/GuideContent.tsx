@@ -7,6 +7,7 @@ import { AiOutlineDownload, AiOutlineDelete } from "react-icons/ai";
 import Swal from "sweetalert2";
 import { MdOutlineBookmarkAdd } from "react-icons/md";
 import { useSelector } from "react-redux";
+import { TbLocationPlus } from "react-icons/tb";
 import { useQuery } from "react-query";
 import axios from "axios";
 
@@ -132,6 +133,11 @@ export const GuideContent = ({ mile_id, onCloseHandler }: Props) => {
           <StyledRow id="upload" style={{ alignSelf: "end" }}>
             <p>강의자료 업로드</p>
             <MdOutlineBookmarkAdd size={23} color={theme.skyblue} />
+          </StyledRow>
+        ) : role === 1 && isQuiz === true ? (
+          <StyledRow id="upload" style={{ alignSelf: "end" }}>
+            <p>퀴즈 생성</p>
+            <TbLocationPlus size={23} color={theme.skyblue} />
           </StyledRow>
         ) : (
           <></>
