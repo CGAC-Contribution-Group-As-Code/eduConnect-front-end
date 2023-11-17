@@ -21,15 +21,17 @@ interface MileStone {
 export const ClassGuide = () => {
   const [make, setMake] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<string>("");
+  const room_id = decodeURI(window.location.pathname).split("/").at(-2);
   const {
     data: milestone_data,
     isLoading,
     isError,
   } = useQuery<MileStone[], Error>({
-    queryKey: "milestonList",
+    queryKey: ["milestonList", room_id],
     queryFn: async () => {
       const response = await axios.get<MileStone[]>(
-        "http://localhost:8000/milestone"
+        "http://localhost:8000/milestone",
+        { params: { room_id: room_id } }
       );
       return response.data;
     },
@@ -171,12 +173,14 @@ interface MakeMilestone {
 const CreateMilestone = ({ setMake }: Offprops) => {
   const mileName = useRef<HTMLInputElement>(null);
   const descName = useRef<HTMLInputElement>(null);
+  const room_id = decodeURI(window.location.pathname).split("/").at(-2);
 
   const CreateMile = async (data: MakeMilestone) => {
     console.log(data);
     const { data: response } = await axios.post(
       `http://localhost:8000/milestone/`,
-      data
+      data,
+      { params: { room_id: room_id } }
     );
     return response.data;
   };
@@ -195,7 +199,7 @@ const CreateMilestone = ({ setMake }: Offprops) => {
       console.log("error");
     },
     onSettled: () => {
-      queryClient.invalidateQueries("milestonList");
+      queryClient.invalidateQueries(["milestonList", room_id]);
     },
   });
 
