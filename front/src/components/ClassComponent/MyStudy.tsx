@@ -24,6 +24,26 @@ interface AiProps {
   feedback: string;
 }
 
+class DataCollection {
+  private userData: UserProps[];
+  private aiData: AiProps[];
+
+  constructor(userData: UserProps[], aiData: AiProps[]) {
+    this.userData = userData;
+    this.aiData = aiData;
+  }
+
+  // Getter 메서드로 userData 반환
+  getUserData(): UserProps[] {
+    return this.userData;
+  }
+
+  // Getter 메서드로 aiData 반환
+  getAiData(): AiProps[] {
+    return this.aiData;
+  }
+}
+
 export const MyStudy = () => {
   let state = useSelector((state: RootState) => {
     return state;
@@ -31,13 +51,47 @@ export const MyStudy = () => {
   const { user } = state;
   const { id, role } = user;
 
+  const fetchData = async () => {
+    const response = await axios.get<{ user: UserProps[]; ai: AiProps[] }>(
+      "http://localhost:8000/api"
+    );
+    return new DataCollection(response.data.user, response.data.ai);
+  };
+
+  const { data, isLoading, isError } = useQuery<DataCollection, Error>(
+    "dataCollection",
+    fetchData
+  );
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  if (isError) {
+    return <span>Error</span>;
+  }
+
+  const userData = data?.getUserData() || [];
+  const aiData = data?.getAiData() || [];
+
   return (
     <StyledWrap>
       <p style={{ fontWeight: "600" }}>{id}님 학습 피드백</p>
 
-      <AiFeedback milestoneName={""} quizNum={1} feedback={""} />
+      {aiData.map((ai, index) => (
+        <AiFeedback
+          key={index}
+          milestoneName={ai.milestoneName}
+          quizNum={ai.quizNum}
+          feedback={ai.feedback}
+        />
+      ))}
+
       <hr />
-      <UserFeedback feedback={""} />
+
+      {userData.map((user, index) => (
+        <UserFeedback key={index} feedback={user.feedback} />
+      ))}
     </StyledWrap>
   );
 };

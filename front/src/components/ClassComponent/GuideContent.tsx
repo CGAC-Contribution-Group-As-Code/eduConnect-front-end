@@ -11,6 +11,8 @@ import { TbLocationPlus } from "react-icons/tb";
 import { useQuery } from "react-query";
 import axios from "axios";
 import { useMutation, useQueryClient } from "react-query";
+import { IoCloudUploadOutline } from "react-icons/io5";
+import { MakeQuiz } from "./MakeQuiz";
 
 type Props = {
   mile_id: string;
@@ -37,7 +39,7 @@ interface Round {
   quiz: Quiz[];
 }
 
-interface Content{
+interface Content {
   name: string;
   path: string;
   size: number;
@@ -51,7 +53,7 @@ interface MileStone {
   contents: Content[];
 }
 
-interface ContentProps{
+interface ContentProps {
   contents: Content[];
 }
 
@@ -74,7 +76,6 @@ export const GuideContent = ({ mile_id, onCloseHandler }: Props) => {
   };
 
   const onUploadButtonClick = () => {
-    console.log("Uploading file:", selectedFile?.type);
     if (selectedFile) {
       // 선택한 파일을 서버로 업로드하거나 다른 작업을 수행할 수 있음
 
@@ -82,15 +83,18 @@ export const GuideContent = ({ mile_id, onCloseHandler }: Props) => {
 
       formData.append("file", selectedFile);
       // 여기에 서버로 파일을 업로드하는 코드를 추가하면 됩니다.
-      axios.post(
-        `http://localhost:8000/milestone/${mile_id}/content`,
-        formData,
-        {
+      axios
+        .post(`http://localhost:8000/milestone/${mile_id}/content`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
-      );
+        })
+        .then(() => {
+          Swal.fire({
+            icon: "success",
+            title: "업로드 성공",
+          });
+        });
     } else {
       alert("파일을 선택해주세요.");
     }
@@ -110,6 +114,9 @@ export const GuideContent = ({ mile_id, onCloseHandler }: Props) => {
       return response.data;
     },
   });
+
+  const [putFile, setPutFile] = useState<boolean>(false);
+  const [onMake, setOnMake] = useState<boolean>(false);
 
   return (
     <StyledDiv>
@@ -185,18 +192,20 @@ export const GuideContent = ({ mile_id, onCloseHandler }: Props) => {
         </StyledRow>
 
         {role === 1 && isQuiz === false ? (
-          <StyledRow id="upload" style={{ alignSelf: "end" }}>
-            <input
-              type="file"
-              accept=".pdf"
-              ref={inputRef}
-              onChange={onUpload}
-            />
-            <p onClick={onUploadButtonClick}>강의자료 업로드</p>
+          <StyledRow
+            id="upload"
+            style={{ alignSelf: "end" }}
+            onClick={() => setPutFile(!putFile)}
+          >
+            <p>강의자료 업로드</p>
             <MdOutlineBookmarkAdd size={23} color={theme.skyblue} />
           </StyledRow>
         ) : role === 1 && isQuiz === true ? (
-          <StyledRow id="upload" style={{ alignSelf: "end" }}>
+          <StyledRow
+            id="upload"
+            style={{ alignSelf: "end" }}
+            onClick={() => setOnMake(!onMake)}
+          >
             <p>퀴즈 생성</p>
             <TbLocationPlus size={23} color={theme.skyblue} />
           </StyledRow>
@@ -205,7 +214,34 @@ export const GuideContent = ({ mile_id, onCloseHandler }: Props) => {
         )}
       </div>
 
-      {isQuiz ? (
+      {!isQuiz && putFile ? (
+        <div
+          style={{
+            display: "flex",
+            flexFlow: "row nowrap",
+            gap: "50px",
+            alignItems: "center",
+            border: "1px solid lightgray",
+            borderRadius: "15px",
+            padding: "0.5em 2vw",
+          }}
+        >
+          <IoCloudUploadOutline
+            style={{ cursor: "pointer" }}
+            title="Upload"
+            size={23}
+            color={theme.navy}
+            onClick={onUploadButtonClick}
+          />
+          <input type="file" accept=".pdf" ref={inputRef} onChange={onUpload} />
+        </div>
+      ) : (
+        <></>
+      )}
+
+      {isQuiz && onMake ? (
+        <MakeQuiz />
+      ) : isQuiz && onMake === false ? (
         milestone_data?.contents ? (
           <ClassQuiz contents={milestone_data?.contents} />
         ) : (
