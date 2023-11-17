@@ -180,7 +180,7 @@ const CreateMilestone = ({ setMake }: Offprops) => {
 
   const onSubmit = () => {
     const nameMile = mileName.current!.value;
-    const descMile = mileName.current!.value;
+    const descMile = descName.current!.value;
 
     const data = {
       name: nameMile,
