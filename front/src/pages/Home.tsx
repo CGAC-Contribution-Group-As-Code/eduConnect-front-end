@@ -7,8 +7,25 @@ import { AiOutlinePlusCircle } from "react-icons/ai";
 import theme from "../styles/theme";
 import { useNavigate } from "react-router-dom";
 
+import { useSelector } from "react-redux";
+
+interface RootState {
+  user: {
+    id: string;
+    role: number;
+  };
+}
+
 export const Home = () => {
   const navigate = useNavigate();
+  let state = useSelector((state: RootState) => {
+    return state;
+  });
+  const { user } = state;
+  const { id, role } = user;
+
+  console.log(id, role);
+
   return (
     <StyledWrapper>
       <StyledDiv>
