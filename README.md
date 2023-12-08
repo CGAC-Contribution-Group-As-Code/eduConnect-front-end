@@ -1,14 +1,13 @@
 # EDU:CONNECT
 ### Front End
-by 조민수 @lookinmin
 
 <hr/>
 
 ## 2023년도 충북 ICT 메이커톤 본선 진출작 EDU:CONNECT
 
 팀 CGAC : Contribution Group As Code <br/>
-Leader : 조민수 <br/>
-Mates : 김광모, 서종원 <br/>
+Leader : 조민수 (FE) <br/>
+Mates : 김광모 (FE & Server), 서종원 (Server)<br/>
 
 #
 
