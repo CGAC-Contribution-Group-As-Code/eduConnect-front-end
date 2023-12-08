@@ -32,7 +32,7 @@ Mates : 김광모, 서종원 <br/>
 
 ### 화면 구성
 1. Login
-<img src=".img/로그인.png" width="80%" align="center">
+<img src="./img/로그인.png" width="80%" align="center">
 
 
   
