@@ -6,6 +6,10 @@ by 조민수 @lookinmin
 
 ## 2023년도 충북 ICT 메이커톤 본선 진출작 EDU:CONNECT
 
+팀 CGAC : Contribution Group As Code
+Leader : 조민수
+Mates : 김광모, 서종원
+
 #
 
 ### Project 개요
@@ -21,4 +25,15 @@ by 조민수 @lookinmin
 - Language : TypeScript
 - Framework : React TS, Material UI, React Bootstrap
 - UI/UX 기획 및 설계 : Figma
+- 사용 기술 : Redux.ts, React-Query, MediaQuery, styled component
+- IDE : VSCode, eslint, prettier
+
+#
+
+### 화면 구성
+1. Login
+<img src=".img/로그인.png" width="80%" align="center">
+
+
+  
 
