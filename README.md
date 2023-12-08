@@ -2,7 +2,7 @@
 ## Front End
 by 조민수 @lookinmin
 
-#
+<hr/>
 
 ## 2023년도 충북 ICT 메이커톤 본선 진출작 EDU:CONNECT
 
