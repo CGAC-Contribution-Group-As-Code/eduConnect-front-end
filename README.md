@@ -1,5 +1,5 @@
 # EDU:CONNECT
-## Front End
+### Front End
 by 조민수 @lookinmin
 
 <hr/>
