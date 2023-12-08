@@ -32,8 +32,23 @@ Mates : 김광모, 서종원 <br/>
 
 ### 화면 구성
 1. Login
-<img src="./img/로그인.png" width="80%" align="center">
-
+<img src="./img/로그인.png" width="80%" align="center"> <br/>
+2. Main
+<img src="./img/main.png" width="80%" align="center"> <br/>
+3. 강의실 개설
+<img src="./img/make.png" width="80%" align="center"> <br/>
+4. 강의실 > Home
+<img src="./img/inside1.png" width="80%" align="center"> <br/>
+5. 강의실 > Milestone System
+<img src="./img/inside2.png" width="80%" align="center"> <br/>
+6. 강의실 > Q&A System
+<img src="./img/inside3.png" width="80%" align="center"> <br/>
+7. 강의실 > Feedback System
+<img src="./img/inside4.png" width="80%" align="center"> <br/>
+8. 강의실 > MileStone > Quiz
+<img src="./img/inside5.png" width="80%" align="center"> <br/>
+9. 교육자 > 강의실 > 퀴즈 생성
+<img src="./img/inside6.png" width="80%" align="center"> <br/>
 
   
 
